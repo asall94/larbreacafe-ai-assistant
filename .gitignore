@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cache local
+embeddings_cache.pkl
+
+# Internal docs
+.github/copilot-instructions.md
+portfolio_brief_terresdecafe.md
+qa_technique_terresdecafe.md
+
+# Test artifacts
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Cache files
+embeddings_cache.pkl
+
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/

@@ -1,0 +1,59 @@
+name: Auto Scraping Mensuel Terres de Cafe
+
+on:
+  # Scraping automatique désactivé (risque perte données horaires/prix)
+  # schedule:
+  #   - cron: '0 2 * * 4'
+  
+  # Permet de lancer manuellement depuis GitHub
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          persist-credentials: true
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4
+      
+      - name: Run scraper
+        run: |
+          python scraper_industrial_2025.py
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet terres_de_cafe_knowledge.json; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push if changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add terres_de_cafe_knowledge.json
+          git commit -m "Mise à jour automatique des données terresdecafe - $(date +'%Y-%m-%d')"
+          git push
+      
+      - name: Notify if no changes
+        if: steps.check_changes.outputs.changes == 'false'
+        run: |
+          echo "Aucun changement détecté dans les données terresdecafe"
