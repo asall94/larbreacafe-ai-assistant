@@ -40,8 +40,8 @@ htmlcov/
 .pytest_cache/
 
 # Simulation results
-simulation_results_*.json
-simulation_results_*.md
+simulation_results*.json
+simulation_results*.md
 
 # Cache files
 embeddings_cache.pkl
