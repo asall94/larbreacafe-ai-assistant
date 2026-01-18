@@ -41,7 +41,9 @@ htmlcov/
 
 # Simulation results
 simulation_results*.json
+simulation_results*.docx
 simulation_results*.md
+Terres_de_cafe_Q&R.pdf
 
 # Cache files
 embeddings_cache.pkl
