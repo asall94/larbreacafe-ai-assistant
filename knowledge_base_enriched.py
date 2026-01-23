@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+﻿from typing import List, Dict, Optional
 import json
 import os
 from datetime import datetime
@@ -8,11 +8,11 @@ from math import radians, sin, cos, sqrt, atan2
 from rag_engine import RAGEngine
 
 class EnrichedKnowledgeBase:
-    """Enriched knowledge base for ALL terresdecafe boutiques"""
+    """Enriched knowledge base for ALL larbrecaf boutiques"""
     
     def __init__(self):
-        self.complete_file = "terresdecafe_knowledge_industrial_2025.json"
-        self.demo_file = "terresdecafe_knowledge_demo.json"
+        self.complete_file = "larbrecaf_knowledge_industrial_2025.json"
+        self.demo_file = "larbrecaf_knowledge_demo.json"
         self.fallback_dir = "./data"
         self.data = self._load_complete_knowledge()
         
@@ -115,9 +115,9 @@ class EnrichedKnowledgeBase:
         return self.boutiques
     
     def _extract_ville_from_name(self, name: str) -> str:
-        """Extract city from boutique name 'Terres de Café City'"""
-        # Remove 'Terres de Café' prefix
-        ville = name.replace('Terres de Café', '').strip()
+        """Extract city from boutique name 'L''Arbre à Café City'"""
+        # Remove 'L''Arbre à Café' prefix
+        ville = name.replace('L''Arbre à Café', '').strip()
         return ville
     
     def get_boutique_by_ville(self, ville: str) -> Optional[Dict]:
@@ -205,7 +205,7 @@ class EnrichedKnowledgeBase:
         
         # General info
         return {
-            'entreprise': 'terresdecafe',
+            'entreprise': 'larbrecaf',
             'nombre_boutiques': len(self.boutiques),
             'villes': [self._extract_ville_from_name(b['name']) for b in self.boutiques],
             'contact_general': self.infos_generales.get('contact_general', {}),
@@ -271,7 +271,7 @@ class EnrichedKnowledgeBase:
                 'format': 'json',
                 'limit': 1
             }
-            headers = {'User-Agent': 'terresdecafeChatbot/1.0'}
+            headers = {'User-Agent': 'larbrecafChatbot/1.0'}
             
             response = requests.get(url, params=params, headers=headers, timeout=5)
             response.raise_for_status()
@@ -345,8 +345,8 @@ class EnrichedKnowledgeBase:
             name = boutique.get('name', '')
             adresse = boutique.get('adresse', '')
             
-            # Extract city from name "Terres de Café {City}"
-            ville = name.replace('Terres de Café', '').strip()
+            # Extract city from name "L''Arbre à Café {City}"
+            ville = name.replace('L''Arbre à Café', '').strip()
             
             # Extract department code from address (postal code)
             import re
@@ -380,8 +380,8 @@ class EnrichedKnowledgeBase:
         
         for boutique in self.boutiques:
             name = boutique.get('name', '')
-            # Extract city from name "Terres de Café {City}"
-            ville = name.replace('Terres de Café', '').strip()
+            # Extract city from name "L''Arbre à Café {City}"
+            ville = name.replace('L''Arbre à Café', '').strip()
             if ville and ville not in cities:
                 cities.append(ville)
         

@@ -1,12 +1,12 @@
-# Terres de Cafe Chatbot AI
+﻿# L'Arbre � Caf� Chatbot AI
 
-Chatbot RAG agentic pour Terres de Cafe (cafes).
+Chatbot RAG agentic pour L'Arbre � Caf� (cafes).
 
 ## Architecture
 
 - **Backend**: FastAPI + OpenAI GPT-4o-mini
 - **RAG**: FAISS semantic search
-- **Knowledge Base**: `terres_de_cafe_knowledge.json`
+- **Knowledge Base**: `larbrecaf_knowledge_industrial_2025.json`
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ python scraper_industrial_2025.py
 python main.py
 ```
 
-Server: http://localhost:8000
+Server: http://localhost:8002
 
 ## Tests
 
@@ -39,9 +39,9 @@ Voir DEPLOYMENT.md pour Render.com
 
 ## Configuration Scraper
 
-- **Site**: https://www.terresdecafe.com
+- **Site**: https://www.larbrecaf.com
 - **Méthode**: Crawling automatique (pas de sitemap)
-- **Output**: terres_de_cafe_knowledge.json
+- **Output**: larbrecaf_knowledge_industrial_2025.json
 
 ## Structure
 

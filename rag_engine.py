@@ -1,5 +1,5 @@
-"""
-Moteur RAG (Retrieval Augmented Generation) avec FAISS pour terresdecafe
+﻿"""
+Moteur RAG (Retrieval Augmented Generation) avec FAISS pour larbrecaf
 Recherche sémantique vectorielle sur la base de connaissances
 """
 
@@ -20,7 +20,7 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 class RAGEngine:
     """Moteur de recherche sémantique avec embeddings et FAISS"""
     
-    def __init__(self, knowledge_file: str = "terresdecafe_knowledge_industrial_2025.json", force_rebuild: bool = False):
+    def __init__(self, knowledge_file: str = "larbrecaf_knowledge_industrial_2025.json", force_rebuild: bool = False):
         self.knowledge_file = knowledge_file
         self.embedding_dim = 1536  # Dimension OpenAI embeddings text-embedding-ada-002
         self.cache_file = "embeddings_cache.pkl"
@@ -130,7 +130,7 @@ class RAGEngine:
         # 3. Informations générales
         infos_gen = self.data.get('informations_generales', {})
         if infos_gen:
-            text_gen = f"Informations générales terresdecafe:\n{json.dumps(infos_gen, indent=2, ensure_ascii=False)}"
+            text_gen = f"Informations générales larbrecaf:\n{json.dumps(infos_gen, indent=2, ensure_ascii=False)}"
             documents.append({
                 'id': 'info_generale',
                 'type': 'info_generale',
@@ -197,7 +197,7 @@ class RAGEngine:
         print("Construction de l'index FAISS...")
         
         # Générer les embeddings
-        texts = [doc['text'][:8000] for doc in self.documents]  # Limiter taille
+        texts = [doc['text'][:8002] for doc in self.documents]  # Limiter taille
         print(f"Génération de {len(texts)} embeddings...")
         self.embeddings = self._get_embeddings_batch(texts)
         

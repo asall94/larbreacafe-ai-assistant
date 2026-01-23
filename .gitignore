@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -31,8 +31,8 @@ embeddings_cache.pkl
 
 # Internal docs
 .github/copilot-instructions.md
-portfolio_brief_terresdecafe.md
-qa_technique_terresdecafe.md
+portfolio_brief_*.md
+qa_technique_*.md
 
 # Test artifacts
 htmlcov/
@@ -43,7 +43,7 @@ htmlcov/
 simulation_results*.json
 simulation_results*.docx
 simulation_results*.md
-Terres_de_cafe_Q&R.pdf
+*_Q&R.pdf
 
 # Cache files
 embeddings_cache.pkl

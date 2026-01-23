@@ -1,4 +1,4 @@
-import requests
+﻿import requests
 from bs4 import BeautifulSoup
 import json
 import time
@@ -6,13 +6,13 @@ from typing import List, Dict, Set
 import re
 from urllib.parse import urljoin, urlparse
 
-class TerresdeCafeIndustrialScraper:
+class larbrecafIndustrialScraper:
     """Complete industrial scraper - Automatically scrapes ALL relevant pages"""
     
-    def __init__(self, base_url: str = "https://www.terresdecafe.com"):
+    def __init__(self, base_url: str = "https://larbreacafe.com"):
         self.base_url = base_url
         self.headers = {
-            'User-Agent': 'TerresdeCafeChatbot/1.0 (https://github.com/asall94/agentic-rag-terresdecafe)'
+            'User-Agent': 'larbrecafChatbot/1.0 (https://github.com/asall94/agentic-rag-larbrecaf)'
         }
         self.visited_urls: Set[str] = set()
         self.all_pages_content = {}
@@ -37,7 +37,7 @@ class TerresdeCafeIndustrialScraper:
         parsed_base = urlparse(self.base_url)
         parsed_url = urlparse(url)
         
-        # Allow both main domain and subdomains (e.g., boutiques.terresdecafe.com)
+        # Allow both main domain and subdomains (e.g., boutiques.larbrecaf.com)
         base_domain = parsed_base.netloc.replace('www.', '')
         url_domain = parsed_url.netloc.replace('www.', '')
         
@@ -183,7 +183,7 @@ class TerresdeCafeIndustrialScraper:
         
         # Check for boutique indicators in content
         text = soup.get_text().lower()
-        indicators = ['horaires', 'adresse', 'téléphone', 'réserver']
+        indicators = ['horaires', 'adresse', 'tÃ©lÃ©phone', 'rÃ©server']
         matches = sum(1 for indicator in indicators if indicator in text)
         
         return matches >= 3
@@ -341,7 +341,7 @@ class TerresdeCafeIndustrialScraper:
                 "statut": statut,
                 "url": url,
                 "coordinates": coordinates,
-                "description": f"Boutique {name}\nAdresse: {adresse}\nTéléphone: {telephone}\n\nPour réserver ou commander: <a href=\"{url}\" target=\"_blank\">Page de la boutique</a>"
+                "description": f"Boutique {name}\nAdresse: {adresse}\nTÃ©lÃ©phone: {telephone}\n\nPour rÃ©server ou commander: <a href=\"{url}\" target=\"_blank\">Page de la boutique</a>"
             }
             
             return boutique_data
@@ -363,7 +363,7 @@ class TerresdeCafeIndustrialScraper:
                 continue
             
             # Ignore navigation/system elements from the start
-            skip_words = ['aller au contenu', 'gérer', 'accepter', 'refuser', 'cookies']
+            skip_words = ['aller au contenu', 'gÃ©rer', 'accepter', 'refuser', 'cookies']
             if any(skip in block.lower() for skip in skip_words):
                 continue
             
@@ -400,15 +400,15 @@ class TerresdeCafeIndustrialScraper:
             # Extract description (second part after first "Plus")
             description = parts[1].strip() if len(parts) > 1 else ''
             
-            # Find price (€ pattern)
-            price_match = re.search(r'(\d+[,.]?\d*)\s*€', block)
+            # Find price (â‚¬ pattern)
+            price_match = re.search(r'(\d+[,.]?\d*)\s*â‚¬', block)
             price = price_match.group(0) if price_match else ''
             
             # Detect tags (vegetarian, spicy, etc.)
             tags = []
-            if 'végé' in block.lower() or 'végétarien' in block.lower():
+            if 'vÃ©gÃ©' in block.lower() or 'vÃ©gÃ©tarien' in block.lower():
                 tags.append('vegetarien')
-            if 'épicé' in block.lower() or 'piment' in block.lower():
+            if 'Ã©picÃ©' in block.lower() or 'piment' in block.lower():
                 tags.append('epice')
             if 'signature' in block.lower() or 'grand cru' in block.lower():
                 tags.append('signature')
@@ -529,17 +529,17 @@ class TerresdeCafeIndustrialScraper:
                         'content': f"{product['nom']}\n{product['description']}\nPrix: {product['prix']}\nTags: {', '.join(product['tags'])}\n\nPour commander: <a href=\"{url}\" target=\"_blank\">Boutique en ligne</a>\n\n{product['raw_content']}",
                         'product_data': product
                     })
-            elif '/fidelite/' in url or 'fidélité' in content['title'].lower():
-                content['content'] = f"{content['content']}\n\nPour en savoir plus: <a href=\"{url}\" target=\"_blank\">Programme de fidélité</a>"
+            elif '/fidelite/' in url or 'fidÃ©litÃ©' in content['title'].lower():
+                content['content'] = f"{content['content']}\n\nPour en savoir plus: <a href=\"{url}\" target=\"_blank\">Programme de fidÃ©litÃ©</a>"
                 categorized_pages['fidelite'].append(content)
             elif '/service-client/' in url or 'faq' in url.lower():
                 content['content'] = f"{content['content']}\n\nContactez-nous: <a href=\"{url}\" target=\"_blank\">Service client</a>"
                 categorized_pages['service_client'].append(content)
             elif '/notre-concept/' in url or '/nos-engagements/' in url:
-                content['content'] = f"{content['content']}\n\nDécouvrez-en plus: <a href=\"{url}\" target=\"_blank\">Notre concept</a>"
+                content['content'] = f"{content['content']}\n\nDÃ©couvrez-en plus: <a href=\"{url}\" target=\"_blank\">Notre concept</a>"
                 categorized_pages['concept'].append(content)
             elif '/devenir-franchise/' in url:
-                content['content'] = f"{content['content']}\n\nRejoignez notre réseau: <a href=\"{url}\" target=\"_blank\">Devenir franchisé</a>"
+                content['content'] = f"{content['content']}\n\nRejoignez notre rÃ©seau: <a href=\"{url}\" target=\"_blank\">Devenir franchisÃ©</a>"
                 categorized_pages['autres'].append(content)
             elif '/nous-rejoindre/' in url:
                 content['content'] = f"{content['content']}\n\nPostulez maintenant: <a href=\"{url}\" target=\"_blank\">Nous rejoindre</a>"
@@ -562,19 +562,19 @@ class TerresdeCafeIndustrialScraper:
             "boutiques": self.boutiques,
             "pages_par_categorie": categorized_pages,
             "informations_generales": {
-                "concept": "Café de Spécialité - Torréfacteur Artisanal depuis 2009",
-                "programme_fidelite": "1€ dépensé = 1 grain de riz (point)",
-                "reduction_premiere_commande": "-10% avec code terresdecafe10",
-                "services_disponibles": ["Sur place", "À emporter", "Livraison", "Drive"],
+                "concept": "CafÃ© de SpÃ©cialitÃ© - TorrÃ©facteur Artisanal depuis 2009",
+                "programme_fidelite": "1â‚¬ dÃ©pensÃ© = 1 grain de riz (point)",
+                "reduction_premiere_commande": "-10% avec code larbrecaf10",
+                "services_disponibles": ["Sur place", "Ã€ emporter", "Livraison", "Drive"],
                 "reseaux_sociaux": {
-                    "instagram": "https://www.instagram.com/terresdecafe/",
-                    "facebook": "https://www.facebook.com/terresdecafeParis/",
-                    "tiktok": "https://www.tiktok.com/@terresdecafe"
+                    "instagram": "https://www.instagram.com/larbrecaf/",
+                    "facebook": "https://www.facebook.com/larbrecafParis/",
+                    "tiktok": "https://www.tiktok.com/@larbrecaf"
                 }
             }
         }
         
-        filename = "terresdecafe_knowledge_industrial_2025.json"
+        filename = "larbrecaf_knowledge_industrial_2025.json"
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         
@@ -594,11 +594,11 @@ class TerresdeCafeIndustrialScraper:
 
 def main():
     print("=" * 60)
-    print("TERRES DE CAFE INDUSTRIAL SCRAPER 2025")
+    print("L''ARBRE À CAFÉ INDUSTRIAL SCRAPER 2025")
     print("100% Dynamic - No Hardcoded URLs")
     print("=" * 60)
     
-    scraper = TerresdeCafeIndustrialScraper()
+    scraper = larbrecafIndustrialScraper()
     scraper.scrape_all_content()
     filename = scraper.save_complete_knowledge_base()
     

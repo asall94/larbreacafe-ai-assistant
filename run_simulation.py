@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Simulation complète du chatbot Terres de Café"""
+﻿#!/usr/bin/env python3
+"""Simulation complète du chatbot L'Arbre à Café"""
 
 import requests
 import json
@@ -7,22 +7,22 @@ from datetime import datetime
 
 def run_simulation():
     questions = [
-        'Quel est le prix du café Yeti Village Bio ?',
+        'Avez-vous des cafés de votre ferme Mariposa ?',
+        'Quelle est l\'adresse de votre boutique Rue du Nil ?',
+        'Proposez-vous des formations pour devenir barista ?',
+        'Quels sont vos horaires d\'ouverture à Paris 7 ?',
+        'Avez-vous une boutique dans le 9ème arrondissement ?',
+        'Combien de boutiques avez-vous à Paris ?',
+        'Vendez-vous des machines Sage The Barista Pro ?',
+        'Proposez-vous des cafés biodynamiques ?',
         'Avez-vous des cafés d\'Éthiopie ?',
-        'Quelle est l\'adresse de votre boutique dans le 4ème arrondissement de Paris ?',
-        'Proposez-vous des formations barista ?',
-        'À partir de quel montant la livraison est-elle gratuite ?',
-        'Vendez-vous des machines espresso ?',
-        'Quels sont vos horaires d\'ouverture rue de Bourbon ?',
-        'Avez-vous une boutique près de Versailles ?',
-        'Combien de boutiques avez-vous en France ?',
-        'Quels cafés ont gagné des prix récemment ?'
+        'Quels sont vos cafés d\'exception ?'
     ]
     
     results = []
     
     print('\n' + '='*70)
-    print('   SIMULATION CHATBOT TERRES DE CAFÉ - AGENTIC RAG')
+    print('   SIMULATION CHATBOT L\'ARBRE À CAFÉ - AGENTIC RAG')
     print(f'   Date: {datetime.now().strftime("%d/%m/%Y %H:%M")}')
     print('='*70)
     
@@ -30,7 +30,7 @@ def run_simulation():
         print(f'\n[Q{i}] {q}')
         print('-'*70)
         try:
-            r = requests.post('http://localhost:8000/chat', 
+            r = requests.post('http://localhost:8002/chat', 
                             json={'message': q}, 
                             timeout=30)
             response = r.json().get('response', 'Erreur')
@@ -55,6 +55,7 @@ def run_simulation():
     json_filename = f'simulation_results_{datetime.now().strftime("%Y%m%d_%H%M")}.json'
     output_data = {
         'date': datetime.now().isoformat(),
+        'company': 'L\'Arbre à Café',
         'total_questions': len(questions),
         'questions': results
     }
@@ -65,7 +66,7 @@ def run_simulation():
     # Export Markdown
     md_filename = f'simulation_results_{datetime.now().strftime("%Y%m%d_%H%M")}.md'
     with open(md_filename, 'w', encoding='utf-8') as f:
-        f.write(f'# Simulation Chatbot Terres de Café\n\n')
+        f.write(f'# Simulation Chatbot L\'Arbre à Café\n\n')
         f.write(f'**Date:** {datetime.now().strftime("%d/%m/%Y %H:%M")}\n\n')
         f.write(f'**Total questions:** {len(questions)}\n\n')
         f.write('---\n\n')

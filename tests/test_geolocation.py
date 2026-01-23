@@ -68,7 +68,7 @@ def test_find_nearest_boutique_output_format():
     
     # Mock OpenAI client to avoid API calls
     api_key = os.getenv('OPENAI_API_KEY', 'test-key')
-    agent = AIAgent(openai_api_key=api_key, website_url="https://terresdecafe.com")
+    agent = AIAgent(openai_api_key=api_key, website_url="https://larbrecaf.com")
     
     response = agent.find_nearest_boutique("Meudon")
     
@@ -76,7 +76,7 @@ def test_find_nearest_boutique_output_format():
     assert "[ERREUR]" not in response
     
     # Check HTML link format <a href="url">text</a> without visible brackets
-    assert re.search(r'<a href="https://boutiques\.terresdecafe\.fr/.+" target="_blank">terresdecafe .+</a>', response), \
+    assert re.search(r'<a href="https://boutiques\.larbrecaf\.fr/.+" target="_blank">larbrecaf .+</a>', response), \
         "Link should be in HTML format with target=_blank and no visible brackets"
     
     # Check structured output sections
@@ -91,7 +91,7 @@ def test_contact_info_format():
     import os
     
     api_key = os.getenv('OPENAI_API_KEY', 'test-key')
-    agent = AIAgent(openai_api_key=api_key, website_url="https://terresdecafe.com")
+    agent = AIAgent(openai_api_key=api_key, website_url="https://larbrecaf.com")
     
     # Test with boutique that has missing contact info
     response = agent.get_contact("Saint-Gratien")
@@ -114,7 +114,7 @@ def test_get_contact_link_html_format():
     # Create agent with mock API key
     agent = AIAgent(
         openai_api_key=os.getenv('OPENAI_API_KEY', 'test-key'),
-        website_url='https://terresdecafe.com'
+        website_url='https://larbrecaf.com'
     )
     
     # Get contact for a known boutique

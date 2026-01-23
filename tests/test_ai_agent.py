@@ -16,11 +16,11 @@ def mock_kb():
     with patch('ai_agent.EnrichedKnowledgeBase') as mock:
         kb_instance = mock.return_value
         kb_instance.search.return_value = [
-            {"type": "boutique", "nom": "Terres de Cafe Corbeil", "ville": "Corbeil-Essonnes"}
+            {"type": "boutique", "nom": "L'Arbre à Café Corbeil", "ville": "Corbeil-Essonnes"}
         ]
         kb_instance.get_all_boutiques.return_value = [
             {
-                "nom": "Terres de Cafe Corbeil",
+                "nom": "L'Arbre à Café Corbeil",
                 "ville": "Corbeil-Essonnes",
                 "adresse": "123 Rue Test",
                 "telephone": "01 23 45 67 89"
@@ -38,7 +38,7 @@ def agent(mock_openai_key, mock_kb):
     with patch('ai_agent.OpenAI'):
         agent = AIAgent(
             openai_api_key=mock_openai_key,
-            website_url="https://terresdecafe.com"
+            website_url="https://larbrecaf.com"
         )
         agent.kb = mock_kb
         return agent
@@ -85,19 +85,19 @@ class TestToolExecution:
         result = agent.search_knowledge("cafe ethiopie")
         
         mock_kb.search.assert_called_once_with("cafe ethiopie", limit=5)
-        assert "Terres de Cafe Corbeil" in result
+        assert "L'Arbre à Café Corbeil" in result
         assert isinstance(result, str)
     
     def test_get_boutiques(self, agent, mock_kb):
         """get_boutiques returns all locations"""
         mock_kb.get_all_boutiques.return_value = [
             {
-                "nom": "Terres de Cafe Corbeil",
-                "name": "Terres de Cafe Corbeil",
+                "nom": "L'Arbre à Café Corbeil",
+                "name": "L'Arbre à Café Corbeil",
                 "ville": "Corbeil-Essonnes",
                 "adresse": "123 Rue Test",
                 "telephone": "01 23 45 67 89",
-                "email": "test@terresdecafe.com",
+                "email": "test@larbrecaf.com",
                 "services": ["livraison"]
             }
         ]
@@ -105,7 +105,7 @@ class TestToolExecution:
         result = agent.get_boutiques()
         
         mock_kb.get_all_boutiques.assert_called_once()
-        assert "Terres de Cafe Corbeil" in result
+        assert "L'Arbre à Café Corbeil" in result
         # Note: get_boutiques() doesn't include ville in output (lines 111-115 ai_agent.py)
         assert "123 Rue Test" in result
         assert "livraison" in result
@@ -113,7 +113,7 @@ class TestToolExecution:
     def test_get_contact_general(self, agent, mock_kb):
         """get_contact returns general contact info"""
         mock_kb.get_all_boutiques.return_value = [
-            {"nom": "Terres de Cafe Test", "telephone": "01 11 11 11 11", "email": "test@terresdecafe.com"}
+            {"nom": "L'Arbre à Café Test", "telephone": "01 11 11 11 11", "email": "test@larbrecaf.com"}
         ]
         
         result = agent.get_contact()
@@ -127,18 +127,18 @@ class TestValidation:
     def test_validate_boutique_existence(self, agent, mock_kb):
         """Validator detects negative phrases when boutique exists"""
         mock_kb.get_all_boutiques.return_value = [
-            {"nom": "Terres de Cafe Corbeil", "name": "Terres de Cafe Corbeil"}
+            {"nom": "L'Arbre à Café Corbeil", "name": "L'Arbre à Café Corbeil"}
         ]
         
         # Valid boutique response
-        response_valid = "Le Terres de Cafe Corbeil est ouvert de 11:30 Ã  14:00."
-        context_valid = "[boutique trouvÃ©] Terres de Cafe Corbeil - Horaires: 11:30-14:00"
-        validated, is_valid = agent._validate_response(response_valid, context_valid, "Terres de Cafe Corbeil")
+        response_valid = "Le L'Arbre à Café Corbeil est ouvert de 11:30 Ã  14:00."
+        context_valid = "[boutique trouvÃ©] L'Arbre à Café Corbeil - Horaires: 11:30-14:00"
+        validated, is_valid = agent._validate_response(response_valid, context_valid, "L'Arbre à Café Corbeil")
         assert is_valid is True
         
         # Negative phrase despite positive context (hallucination)
         response_negative = "Nous n'avons pas de boutique dans le 91."
-        context_positive = "[boutique trouvÃ©] Terres de Cafe Corbeil-Essonnes - Essonne 91"
+        context_positive = "[boutique trouvÃ©] L'Arbre à Café Corbeil-Essonnes - Essonne 91"
         validated, is_valid = agent._validate_response(response_negative, context_positive, "boutique 91")
         # Should detect hallucination
         assert not is_valid
@@ -167,7 +167,7 @@ class TestDepartmentDetection:
     def test_detect_essonne_91(self, agent, mock_kb):
         """91/Essonne queries map to Corbeil"""
         mock_kb.search.return_value = [
-            {"nom": "Terres de Cafe Corbeil", "ville": "Corbeil-Essonnes", "content": "boutique Corbeil", "data": {}}
+            {"nom": "L'Arbre à Café Corbeil", "ville": "Corbeil-Essonnes", "content": "boutique Corbeil", "data": {}}
         ]
         
         # Test with department code
@@ -178,7 +178,7 @@ class TestDepartmentDetection:
     def test_detect_val_de_marne_94(self, agent, mock_kb):
         """94/Val-de-Marne queries map to Ivry"""
         mock_kb.search.return_value = [
-            {"nom": "Terres de Cafe Ivry", "ville": "Ivry-sur-Seine", "content": "boutique Ivry", "data": {}}
+            {"nom": "L'Arbre à Café Ivry", "ville": "Ivry-sur-Seine", "content": "boutique Ivry", "data": {}}
         ]
         
         result = agent.get_boutique_info("94")

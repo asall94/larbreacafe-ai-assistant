@@ -26,7 +26,7 @@ def sample_documents():
         {
             "id": "1",
             "type": "boutique",
-            "nom": "Terres de Café Blancs-Manteaux",
+            "nom": "L'Arbre � Caf� Blancs-Manteaux",
             "ville": "Paris",
             "content": "Boutique de café de spécialité à Paris Marais"
         },
@@ -40,7 +40,7 @@ def sample_documents():
         {
             "id": "3",
             "type": "boutique",
-            "nom": "Terres de Café Versailles",
+            "nom": "L'Arbre � Caf� Versailles",
             "ville": "Versailles",
             "content": "Boutique de café de spécialité à Versailles"
         }
@@ -70,7 +70,7 @@ class TestRAGEngineInitialization:
     def test_initialization_without_api_key(self):
         """Engine can initialize with default knowledge file"""
         engine = RAGEngine()
-        assert engine.knowledge_file == "terresdecafe_knowledge_industrial_2025.json"
+        assert engine.knowledge_file == "larbrecaf_knowledge_industrial_2025.json"
         assert hasattr(engine, 'index')
         assert engine.embedding_dim == 1536
 

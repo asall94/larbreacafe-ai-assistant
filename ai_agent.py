@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, Tuple
+﻿from typing import List, Dict, Optional, Tuple
 from openai import OpenAI
 import json
 from datetime import datetime
@@ -25,7 +25,7 @@ class AIAgent:
             'tools_used_count': {},
             'last_tools_used': []
         }
-        self.greeting_message = "Bonjour et bienvenue chez Terres de Cafe.\nComment puis-je vous aider ?"
+        self.greeting_message = "Bonjour et bienvenue chez L''Arbre à Café.\nComment puis-je vous aider ?"
     
     def _get_conversation_memory(self, conversation_id: str) -> List[Dict]:
         """Get or create conversation memory for specific conversation_id"""
@@ -42,7 +42,7 @@ class AIAgent:
             },
             {
                 "name": "get_boutiques",
-                "description": "Liste TOUS les boutiques Terres de Cafe (nombre total, combien, count) avec adresses",
+                "description": "Liste TOUS les boutiques L''Arbre à Café (nombre total, combien, count) avec adresses",
                 "parameters": {}
             },
             {
@@ -62,7 +62,7 @@ class AIAgent:
             },
             {
                 "name": "find_nearest_boutique",
-                "description": "Trouve le boutique Terres de Cafe le plus proche d'une ville donnée",
+                "description": "Trouve le boutique L''Arbre à Café le plus proche d'une ville donnée",
                 "parameters": {"ville_reference": "Nom de la ville de référence"}
             }
         ]
@@ -120,13 +120,13 @@ class AIAgent:
         return "\n\n".join(context)
     
     def get_boutiques(self) -> str:
-        """Liste tous les boutiques Terres de Cafe"""
+        """Liste tous les boutiques L''Arbre à Café"""
         boutiques = self.kb.get_all_boutiques()
         
         if not boutiques:
             return "Aucun boutique disponible."
         
-        result = f"terresdecafe - {len(boutiques)} BOUTIQUES EN ÎLE-DE-FRANCE:\n\n"
+        result = f"larbrecaf - {len(boutiques)} BOUTIQUES EN ÎLE-DE-FRANCE:\n\n"
         
         for resto in boutiques:
             result += f"• {resto['name']}\n"
@@ -162,7 +162,7 @@ class AIAgent:
             return f"Site web: {self.website_url}"
         
         if ville and contact.get('boutique'):
-            result = f"Voici les coordonnées du boutique terresdecafe à {contact.get('ville', ville)} :\n\n"
+            result = f"Voici les coordonnées du boutique larbrecaf à {contact.get('ville', ville)} :\n\n"
             
             # Only show available fields (no N/A or "Non renseigné")
             if contact.get('adresse'):
@@ -182,8 +182,8 @@ class AIAgent:
                 else:
                     result += f'\nPlus d\'infos: <a href="{contact["url"]}" target="_blank">{contact["url"]}</a>'
         else:
-            result = f"CONTACT terresdecafe\n\n"
-            result += f"Entreprise: {contact.get('entreprise', 'Terres de Cafe')}\n"
+            result = f"CONTACT larbrecaf\n\n"
+            result += f"Entreprise: {contact.get('entreprise', 'L''Arbre à Café')}\n"
             result += f"Boutiques: {contact.get('nombre_boutiques', 0)} en Île-de-France\n"
             result += f"Villes: {', '.join(contact.get('villes', []))}\n\n"
             
@@ -195,7 +195,7 @@ class AIAgent:
         return result
     
     def find_nearest_boutique(self, ville_reference: str) -> str:
-        """Find nearest Terres de Cafe boutique from a reference city"""
+        """Find nearest L''Arbre à Café boutique from a reference city"""
         result = self.kb.find_nearest_boutique(ville_reference)
         
         if result.get('error'):
@@ -214,7 +214,7 @@ class AIAgent:
             if '/nos-boutiques' in result['url'] or '/content/70' in result['url']:
                 output += f'Retrouvez toutes nos boutiques : <a href="{result["url"]}" target="_blank">Nos boutiques</a>\n'
             else:
-                output += f'Plus d\'infos: <a href="{result["url"]}" target="_blank">terresdecafe {result["ville"]}</a>\n'
+                output += f'Plus d\'infos: <a href="{result["url"]}" target="_blank">larbrecaf {result["ville"]}</a>\n'
         
         return output
     
@@ -291,7 +291,7 @@ class AIAgent:
         # Add Paris arrondissements rule
         arrondissement_rule = "\nSi la question mentionne 'arrondissement' ou 'Paris 10e/10ème' → utilise search_knowledge avec la query complète (détection automatique)"
         
-        planning_prompt = f"""Tu es un agent IA autonome et intelligent pour le boutique Terres de Cafe.
+        planning_prompt = f"""Tu es un agent IA autonome et intelligent pour le boutique L''Arbre à Café.
 
 Outils disponibles:
 {json.dumps(self.tools, indent=2, ensure_ascii=False)}
@@ -499,9 +499,9 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
         boutiques = self.kb.get_all_boutiques()
         boutiques_info = []
         for resto in boutiques:
-            # Extract city from boutique name "Terres de Café {City}"
+            # Extract city from boutique name "L''Arbre à Café {City}"
             name = resto.get('name', '')
-            ville = name.replace('Terres de Café', '').strip()
+            ville = name.replace('L''Arbre à Café', '').strip()
             telephone = resto.get('telephone', 'N/A')
             adresse = resto.get('adresse', 'N/A')
             boutiques_info.append(f"  * {ville} - {adresse} - Tel: {telephone}")
@@ -636,7 +636,7 @@ if __name__ == "__main__":
     
     agent = AIAgent(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
-        website_url="https://terresdecafe.com"
+        website_url="https://larbrecaf.com"
     )
     
     print(f"\nAgent ready with {len(agent.kb.get_all_boutiques())} boutiques!\n")

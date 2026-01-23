@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+﻿from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
@@ -15,7 +15,7 @@ load_dotenv()
 # Setup structured JSON logging
 logger = setup_logger(__name__)
 
-app = FastAPI(title="Terres de Cafe Chatbot API")
+app = FastAPI(title="L'Arbre à Café Chatbot API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,7 +35,7 @@ agent = None
 async def startup_event():
     global agent
     api_key = os.getenv("OPENAI_API_KEY")
-    website_url = os.getenv("WEBSITE_URL", "https://www.terresdecafe.com")
+    website_url = os.getenv("WEBSITE_URL", "https://larbreacafe.com")
     
     if not api_key:
         logger.warning("OPENAI_API_KEY not set - agent initialization skipped")
@@ -69,7 +69,7 @@ async def read_root():
         with open("static/index.html", "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
-        return {"status": "ok", "service": "Terres de Cafe Chatbot API", "version": "1.0.2"}
+        return {"status": "ok", "service": "L'Arbre à Café Chatbot API", "version": "1.0.2"}
 
 @app.head("/")
 @app.options("/")
@@ -173,4 +173,4 @@ async def get_metrics():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8002)
