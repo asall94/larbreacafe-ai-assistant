@@ -7,7 +7,7 @@ from datetime import datetime
 
 def run_simulation():
     questions = [
-        'Avez-vous des cafés de votre ferme Mariposa ?',
+        'Proposez-vous des cafés de la ferme Mariposa ?',
         'Quelle est l\'adresse de votre boutique Rue du Nil ?',
         'Proposez-vous des formations pour devenir barista ?',
         'Quels sont vos horaires d\'ouverture à Paris 7 ?',

@@ -42,13 +42,13 @@ class AIAgent:
             },
             {
                 "name": "get_boutiques",
-                "description": "Liste TOUS les boutiques L''Arbre à Café (nombre total, combien, count) avec adresses",
+                "description": "OBLIGATOIRE pour: combien de boutiques, nombre de boutiques, liste des boutiques, toutes les boutiques, quelles boutiques. Retourne TOUTES les 4 boutiques à Paris avec adresses complètes",
                 "parameters": {}
             },
             {
                 "name": "get_boutique_info",
-                "description": "Infos détaillées d'un boutique spécifique (par ville)",
-                "parameters": {"ville": "Nom de la ville"}
+                "description": "Infos détaillées d'un boutique spécifique par ville, arrondissement, ou nom de rue (ex: 'Nil', 'Martyrs', 'Paris 07'). Recherche intelligente dans nom et adresse complète",
+                "parameters": {"ville": "Nom ville/arrondissement/rue"}
             },
             {
                 "name": "get_contact",
@@ -291,6 +291,22 @@ class AIAgent:
         # Add Paris arrondissements rule
         arrondissement_rule = "\nSi la question mentionne 'arrondissement' ou 'Paris 10e/10ème' → utilise search_knowledge avec la query complète (détection automatique)"
         
+        # Generate boutique examples dynamically from KB (100% RAG)
+        boutique_examples = []
+        for b in self.kb.boutiques[:4]:  # Max 4 examples
+            name = b.get('name', '').replace("L'Arbre à Café ", "")
+            adresse = b.get('adresse', '')
+            # Extract street name from address (e.g., "10 Rue du Nil - 75002 Paris" → "Nil")
+            if adresse:
+                street_parts = adresse.split('-')[0].strip()  # "10 Rue du Nil"
+                street_words = street_parts.split()
+                if len(street_words) >= 2:
+                    # Last word of street (e.g., "Nil", "Martyrs", "Sèvres")
+                    street_key = street_words[-1]
+                    boutique_examples.append(f'   - "{street_key}", "{name}" → get_boutique_info avec ville="{street_key}" ou ville="{name}"')
+        
+        boutique_rules = "\n".join(boutique_examples) if boutique_examples else ""
+        
         planning_prompt = f"""Tu es un agent IA autonome et intelligent pour le boutique L''Arbre à Café.
 
 Outils disponibles:
@@ -298,10 +314,18 @@ Outils disponibles:
 
 Question client: "{enriched_query}"
 
-RÈGLE IMPORTANTE - DÉPARTEMENTS (auto-généré depuis base de connaissances):
+RÈGLES IMPORTANTES:
+
+1. COMPTAGE/LISTE BOUTIQUES:
+   - "combien", "nombre", "toutes", "liste", "quelles" → get_boutiques
+
+2. BOUTIQUE SPÉCIFIQUE (exemples auto-générés depuis base):
+{boutique_rules}
+
+3. DÉPARTEMENTS (auto-généré depuis base):
 {dept_rules}{arrondissement_rule}
 
-Analyse la question et choisis les meilleurs outils à utiliser.
+Analyse la question et choisis les meilleurs outils.
 
 Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
 {{

@@ -167,18 +167,23 @@ class EnrichedKnowledgeBase:
             resto_adresse_normalized = boutique_adresse.replace('-', ' ')
             resto_ville_compact = resto_ville_normalized.replace(' ', '')
             
-            # Multi-strategy matching:
-            # 1. Exact or starts-with match (original)
+            # Multi-strategy matching (100% RAG - search in name AND address):
+            # 1. Exact match in name
             if ville_lower in resto_ville or resto_ville.startswith(ville_lower):
-                return resto
-            # 2. Normalized match (with spaces)
+                return boutique
+            # 2. Normalized match in name
             if ville_normalized in resto_ville_normalized or resto_ville_normalized.startswith(ville_normalized):
-                return resto
-            # 3. Compact match (e.g., "ivrysurseine" matches "ivry")
+                return boutique
+            # 3. Compact match in name
             if resto_ville_compact in ville_compact or ville_compact.startswith(resto_ville_compact):
-                return resto
-            # 4. Address match
+                return boutique
+            # 4. Search in address (street names, postal codes)
             if ville_lower in resto_adresse or ville_normalized in resto_adresse_normalized:
+                return boutique
+            # 5. Partial word match in address (e.g., "nil" → "rue du nil")
+            adresse_words = resto_adresse_normalized.split()
+            search_words = ville_normalized.split()
+            if any(search_word in adresse_words for search_word in search_words if len(search_word) > 2):
                 return boutique
         
         return None
