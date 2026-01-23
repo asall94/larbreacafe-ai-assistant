@@ -126,7 +126,15 @@ class AIAgent:
         if not boutiques:
             return "Aucun boutique disponible."
         
-        result = f"larbrecaf - {len(boutiques)} BOUTIQUES EN ÎLE-DE-FRANCE:\n\n"
+        # Extract unique regions from boutiques (100% dynamic)
+        regions = set()
+        for b in boutiques:
+            addr = b.get('adresse', '')
+            if 'Paris' in addr:
+                regions.add('Paris')
+        region_text = ', '.join(sorted(regions)) if regions else 'France'
+        
+        result = f"Nous avons {len(boutiques)} boutique{'s' if len(boutiques) > 1 else ''} à {region_text}:\n\n"
         
         for resto in boutiques:
             result += f"• {resto['name']}\n"
@@ -548,6 +556,7 @@ GENERATION CONSTRAINTS:
 - If context empty AFTER tool execution: Say "Cette information n'est pas disponible sur le site pour le moment." + suggest contacting boutique directly.
 - Schedules: Use exact format from context (8h-19h). If missing: "Ces horaires ne sont pas disponibles sur le site pour le moment."
 - Prices: Only mention if present in context. If missing: "Les prix sont disponibles en boutique."
+- Tasting notes/descriptions: Copy COMPLETE text from context. Do NOT simplify or omit details. Example: if context says "Jasmin, fleur de mûrier et de caféier, citrus, anette" → copy ALL 5 elements, never shorten to "jasmin, fleur de mûrier et citrus".
 - Links: If context has HTML tags <a href>, copy EXACTLY as-is (preserve HTML).
 - Source questions ("où", "lien", "url", "source"): If context lacks specific URL → provide general site + phone contact.
 - Format: Plain text with line breaks for readability. NO markdown syntax (no bold/italic/underline markers).

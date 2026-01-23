@@ -121,34 +121,8 @@ class EnrichedKnowledgeBase:
         return ville
     
     def get_boutique_by_ville(self, ville: str) -> Optional[Dict]:
-        """Find boutique by city, department or postal code"""
-        # Department → city mapping (normalized version)
-        dept_mapping = {
-            "91": "corbeil",  # Simplified for partial match
-            "essonne": "corbeil",
-            "94": "ivry",
-            "val-de-marne": "ivry",
-            "78": "mureaux",
-            "yvelines": "mureaux",
-            "77": "lagny",
-            "seine-et-marne": "lagny"
-        }
-        
+        """Find boutique by city, department or postal code - 100% dynamic from KB"""
         ville_search = ville.lower().strip()
-        
-        # Search by department mapping
-        if ville_search in dept_mapping:
-            ville_search = dept_mapping[ville_search]
-        
-        # Search by postal code (91xxx → corbeil)
-        if ville_search.startswith("91"):
-            ville_search = "corbeil"
-        elif ville_search.startswith("94"):
-            ville_search = "ivry"
-        elif ville_search.startswith("78"):
-            ville_search = "mureaux"
-        elif ville_search.startswith("77"):
-            ville_search = "lagny"
         
         # Search boutique (fuzzy matching with normalization)
         ville_lower = ville_search.lower()
