@@ -151,6 +151,61 @@ class larbrecafIndustrialScraper:
         
         return list(discovered_urls)
     
+    def extract_all_boutiques_from_page(self, soup: BeautifulSoup) -> List[Dict]:
+        """Extract all boutiques from nos-boutiques page"""
+        boutiques = []
+        seen_addresses = set()
+        
+        # Extraire tous les headings h3 (noms des boutiques)
+        h3_tags = soup.find_all('h3')
+        
+        for h3 in h3_tags:
+            # Trouver le texte suivant après le h3
+            next_text = ""
+            for sibling in h3.find_next_siblings(limit=10):
+                text = sibling.get_text(strip=True)
+                if text:
+                    next_text += text + "\n"
+                    # Arrêter si on trouve un téléphone (fin de section)
+                    if re.search(r'0[1-9](?:[\s.]?\d{2}){4}', text):
+                        break
+            
+            # Chercher adresse et téléphone dans le texte suivant
+            addr_match = re.search(r'([\d]+\s+[Rr]ue[^-\n]+?-\s*75\d{3}\s+Paris)', next_text, re.IGNORECASE)
+            tel_match = re.search(r'(0[1-9](?:[\s.]?\d{2}){4})', next_text)
+            
+            if addr_match and tel_match:
+                name = h3.get_text(strip=True)
+                adresse = addr_match.group(1).strip()
+                telephone = tel_match.group(1).strip()
+                
+                # Éviter doublons
+                if adresse in seen_addresses:
+                    continue
+                seen_addresses.add(adresse)
+                
+                # Extraire code postal
+                cp_match = re.search(r'75(\d{3})', adresse)
+                code_postal = f"75{cp_match.group(1)}" if cp_match else ""
+                
+                # Nettoyer nom (enlever "L'Arbre à Café -" si présent)
+                if name.startswith("L'Arbre à Café"):
+                    name = name
+                else:
+                    name = f"L'Arbre à Café - {name}"
+                
+                boutiques.append({
+                    "name": name,
+                    "telephone": telephone.replace('.', ' '),
+                    "adresse": adresse,
+                    "code_postal": code_postal,
+                    "ville": "Paris",
+                    "statut": "ouvert",
+                    "url": "https://larbreacafe.com/pages/nos-boutiques"
+                })
+        
+        return boutiques
+    
     def is_boutique_page(self, url: str, soup: BeautifulSoup) -> bool:
         """Detect if page is a boutique page"""
         # Pattern matching on URL
@@ -227,12 +282,18 @@ class larbrecafIndustrialScraper:
                 if page_data:
                     self.all_pages_content[url] = page_data
                     
-                    # Check if it's a boutique page
+                    # Check if it's a boutique page OR nos-boutiques page
                     try:
                         response = requests.get(url, headers=self.headers, timeout=15)
                         soup = BeautifulSoup(response.content, 'html.parser')
                         
-                        if self.is_boutique_page(url, soup):
+                        # If it's nos-boutiques, extract all boutiques from content
+                        if '/nos-boutiques' in url.lower():
+                            print(f"    [NOS-BOUTIQUES PAGE] Extracting all boutiques...")
+                            boutiques_extracted = self.extract_all_boutiques_from_page(soup)
+                            self.boutiques.extend(boutiques_extracted)
+                            print(f"    Extracted {len(boutiques_extracted)} boutiques")
+                        elif self.is_boutique_page(url, soup):
                             print(f"    [BOUTIQUE DETECTED] {url}")
                             boutique_data = self.extract_boutique_data_from_soup(url, soup)
                             if boutique_data:
@@ -294,7 +355,7 @@ class larbrecafIndustrialScraper:
                 # Extract address
                 adresse = ""
                 for string in soup.stripped_strings:
-                    if re.search(r'\d+.*(?:Rue|Avenue|Boulevard|Place)', string):
+                    if re.search(r'\d+.*(?:Rue|Avenue|Boulevard|Place)', string, re.IGNORECASE):
                         adresse = string
                         break
                 

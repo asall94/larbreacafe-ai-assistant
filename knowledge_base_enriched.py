@@ -1,6 +1,7 @@
 ﻿from typing import List, Dict, Optional
 import json
 import os
+import re
 from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 
@@ -151,10 +152,20 @@ class EnrichedKnowledgeBase:
             # 3. Compact match in name
             if resto_ville_compact in ville_compact or ville_compact.startswith(resto_ville_compact):
                 return boutique
-            # 4. Search in address (street names, postal codes)
+            # 4. Search in address (street names, postal codes, arrondissements)
             if ville_lower in resto_adresse or ville_normalized in resto_adresse_normalized:
                 return boutique
-            # 5. Partial word match in address (e.g., "nil" → "rue du nil")
+            # 5. Match arrondissement (Paris 09, 9ème, 75009)
+            code_postal = boutique.get('code_postal', '')
+            if code_postal:
+                # Extract arrondissement from postal code (75009 → 09)
+                arr_match = re.search(r'75(\d{3})', code_postal)
+                if arr_match:
+                    arr_num = arr_match.group(1)
+                    # Match: "paris 09", "09", "9", "9ème", "75009"
+                    if any(pattern in ville_lower for pattern in [f'paris {arr_num}', f'paris{arr_num}', arr_num, arr_num.lstrip('0'), f'{arr_num.lstrip("0")}ème', code_postal.lower()]):
+                        return boutique
+            # 6. Partial word match in address (e.g., "nil" → "rue du nil")
             adresse_words = resto_adresse_normalized.split()
             search_words = ville_normalized.split()
             if any(search_word in adresse_words for search_word in search_words if len(search_word) > 2):

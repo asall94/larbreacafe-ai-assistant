@@ -42,18 +42,18 @@ class AIAgent:
             },
             {
                 "name": "get_boutiques",
-                "description": "OBLIGATOIRE pour: combien de boutiques, nombre de boutiques, liste des boutiques, toutes les boutiques, quelles boutiques. Retourne TOUTES les 4 boutiques à Paris avec adresses complètes",
+                "description": "OBLIGATOIRE pour: combien de boutiques, nombre de boutiques, liste des boutiques, toutes les boutiques, quelles boutiques. Retourne TOUTES les boutiques avec adresses complètes",
                 "parameters": {}
             },
             {
                 "name": "get_boutique_info",
-                "description": "Infos détaillées d'un boutique spécifique par ville, arrondissement, ou nom de rue (ex: 'Nil', 'Martyrs', 'Paris 07'). Recherche intelligente dans nom et adresse complète",
+                "description": "Infos détaillées d'un boutique spécifique par ville, arrondissement, ou nom de rue. Recherche intelligente dans nom et adresse complète",
                 "parameters": {"ville": "Nom ville/arrondissement/rue"}
             },
             {
                 "name": "get_contact",
-                "description": "Récupère les informations de contact (général ou d'un boutique spécifique)",
-                "parameters": {"ville": "Nom de la ville (optionnel)"}
+                "description": "Contact info pour boutique spécifique (téléphone, adresse). Utiliser pour 'comment contacter', 'numéro', 'téléphone', 'joindre' + ville/arrondissement",
+                "parameters": {"ville": "Nom ville/arrondissement/rue"}
             },
             {
                 "name": "get_hours",

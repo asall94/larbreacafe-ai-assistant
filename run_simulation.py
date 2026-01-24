@@ -44,7 +44,7 @@ def add_hyperlink(paragraph, url, text):
     rPr.append(rFonts)
     
     sz = OxmlElement('w:sz')
-    sz.set(qn('w:val'), '22')  # 11pt = 22 half-points
+    sz.set(qn('w:val'), '21')  # 10.5pt = 21 half-points
     rPr.append(sz)
     
     new_run.append(rPr)
@@ -124,7 +124,7 @@ def run_simulation():
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = title.add_run(f"Agent intelligent pour L'Arbre à Café - Simulation du {datetime.now().strftime('%d/%m/%Y')}")
     run.font.name = 'Calibri'
-    run.font.size = Pt(11)
+    run.font.size = Pt(10.5)
     run.underline = True
     
     doc.add_paragraph()  # Ligne vide
@@ -135,7 +135,7 @@ def run_simulation():
         question_para = doc.add_paragraph()
         question_run = question_para.add_run(f"Q{r['numero']} : {r['question']}")
         question_run.font.name = 'Calibri'
-        question_run.font.size = Pt(11)
+        question_run.font.size = Pt(10.5)
         
         doc.add_paragraph()  # Ligne vide
         
@@ -154,7 +154,7 @@ def run_simulation():
             if before_text:
                 run = response_para.add_run(before_text)
                 run.font.name = 'Calibri'
-                run.font.size = Pt(11)
+                run.font.size = Pt(10.5)
             
             # Ajouter le lien cliquable avec la fonction add_hyperlink
             url = match.group(1)
@@ -170,7 +170,7 @@ def run_simulation():
             remaining_text = re.sub(r'<[^>]+>', '', remaining_text)
             run = response_para.add_run(remaining_text)
             run.font.name = 'Calibri'
-            run.font.size = Pt(11)
+            run.font.size = Pt(10.5)
         
         doc.add_paragraph()  # Ligne vide
         
@@ -178,7 +178,7 @@ def run_simulation():
         separator = doc.add_paragraph('---')
         sep_run = separator.runs[0]
         sep_run.font.name = 'Calibri'
-        sep_run.font.size = Pt(11)
+        sep_run.font.size = Pt(10.5)
         
         doc.add_paragraph()  # Ligne vide
     
