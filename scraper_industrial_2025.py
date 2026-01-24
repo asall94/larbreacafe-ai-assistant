@@ -171,7 +171,7 @@ class larbrecafIndustrialScraper:
                         break
             
             # Chercher adresse et téléphone dans le texte suivant
-            addr_match = re.search(r'([\d]+\s+[Rr]ue[^-\n]+?-\s*75\d{3}\s+Paris)', next_text, re.IGNORECASE)
+            addr_match = re.search(r'([\d]+\s+(?:Rue|Carrefour|Avenue|Boulevard|Place)[^-\n]+?-\s*75\d{3}\s+Paris)', next_text, re.IGNORECASE)
             tel_match = re.search(r'(0[1-9](?:[\s.]?\d{2}){4})', next_text)
             
             if addr_match and tel_match:
