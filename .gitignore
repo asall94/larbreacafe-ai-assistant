@@ -40,9 +40,7 @@ htmlcov/
 .pytest_cache/
 
 # Simulation results
-simulation_results*.json
-simulation_results*.docx
-simulation_results*.md
+simulation_results*
 *_Q&R.pdf
 
 # Cache files
