@@ -41,7 +41,7 @@ htmlcov/
 
 # Simulation results
 simulation_results*
-*_Q&R.pdf
+*_Q&R*
 
 # Cache files
 embeddings_cache.pkl
