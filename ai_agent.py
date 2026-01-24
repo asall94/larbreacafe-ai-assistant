@@ -192,7 +192,7 @@ class AIAgent:
         else:
             result = f"CONTACT larbrecaf\n\n"
             result += f"Entreprise: {contact.get('entreprise', 'L''Arbre à Café')}\n"
-            result += f"Boutiques: {contact.get('nombre_boutiques', 0)} en Île-de-France\n"
+            result += f"Boutiques: {contact.get('nombre_boutiques', 0)}\n"
             result += f"Villes: {', '.join(contact.get('villes', []))}\n\n"
             
             if contact.get('contact_general'):
@@ -420,7 +420,7 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
                         corrected = self.get_boutique_info(dept)
                         return corrected, False
                     # Otherwise return generic message based on context
-                    return "Oui, nous avons plusieurs boutiques en Île-de-France. Pour plus de détails sur un boutique spécifique, précisez la ville ou le département.", False
+                    return "Oui, nous avons plusieurs boutiques. Pour plus de détails sur une boutique spécifique, précisez la ville ou le département.", False
         
         # 2. Check schedule inconsistencies
         import re
@@ -483,7 +483,7 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
                         "validation_result": "count_mismatch"
                     })
                     # Return exact corrected count
-                    corrected = f"Nous avons {real_count} boutiques en France (Paris et Île-de-France principalement, ainsi que Lille et Versailles)."
+                    corrected = f"Nous avons {real_count} boutiques en France."
                     return corrected, False
         
         # 5. Check aberrant or hallucinated prices
