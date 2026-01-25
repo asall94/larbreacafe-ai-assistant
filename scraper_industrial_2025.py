@@ -218,7 +218,7 @@ class larbrecafIndustrialScraper:
         if any(pattern in url.lower() for pattern in boutique_patterns):
             return True
         
-        # Check for Schema.org Restaurant/LocalBusiness type
+        # Check for Schema.org Restaurant/LocalBusiness type (boutiques)
         scripts = soup.find_all('script', type='application/ld+json')
         for script in scripts:
             try:

@@ -110,10 +110,6 @@ class EnrichedKnowledgeBase:
         """Return all boutiques"""
         return self.boutiques
     
-    # Alias for backward compatibility
-    def get_all_restaurants(self) -> List[Dict]:
-        """Alias for backward compatibility (old name)"""
-        return self.boutiques
     
     def _extract_ville_from_name(self, name: str) -> str:
         """Extract city from boutique name 'L''Arbre à Café City'"""
@@ -134,26 +130,26 @@ class EnrichedKnowledgeBase:
         
         for boutique in self.boutiques:
             # Extract city from name and address
-            resto_ville = self._extract_ville_from_name(boutique.get('name', '')).lower()
+            boutique_ville = self._extract_ville_from_name(boutique.get('name', '')).lower()
             boutique_adresse = boutique.get('adresse', '').lower()
             
             # Normalize boutique data
-            resto_ville_normalized = resto_ville.replace('-', ' ').replace('  ', ' ').strip()
-            resto_adresse_normalized = boutique_adresse.replace('-', ' ')
-            resto_ville_compact = resto_ville_normalized.replace(' ', '')
+            boutique_ville_normalized = boutique_ville.replace('-', ' ').replace('  ', ' ').strip()
+            boutique_adresse_normalized = boutique_adresse.replace('-', ' ')
+            boutique_ville_compact = boutique_ville_normalized.replace(' ', '')
             
             # Multi-strategy matching (100% RAG - search in name AND address):
             # 1. Exact match in name
-            if ville_lower in resto_ville or resto_ville.startswith(ville_lower):
+            if ville_lower in boutique_ville or boutique_ville.startswith(ville_lower):
                 return boutique
             # 2. Normalized match in name
-            if ville_normalized in resto_ville_normalized or resto_ville_normalized.startswith(ville_normalized):
+            if ville_normalized in boutique_ville_normalized or boutique_ville_normalized.startswith(ville_normalized):
                 return boutique
             # 3. Compact match in name
-            if resto_ville_compact in ville_compact or ville_compact.startswith(resto_ville_compact):
+            if boutique_ville_compact in ville_compact or ville_compact.startswith(boutique_ville_compact):
                 return boutique
             # 4. Search in address (street names, postal codes, arrondissements)
-            if ville_lower in resto_adresse or ville_normalized in resto_adresse_normalized:
+            if ville_lower in boutique_adresse or ville_normalized in boutique_adresse_normalized:
                 return boutique
             # 5. Match arrondissement (Paris 09, 9ème, 75009)
             code_postal = boutique.get('code_postal', '')
@@ -166,7 +162,7 @@ class EnrichedKnowledgeBase:
                     if any(pattern in ville_lower for pattern in [f'paris {arr_num}', f'paris{arr_num}', arr_num, arr_num.lstrip('0'), f'{arr_num.lstrip("0")}ème', code_postal.lower()]):
                         return boutique
             # 6. Partial word match in address (e.g., "nil" → "rue du nil")
-            adresse_words = resto_adresse_normalized.split()
+            adresse_words = boutique_adresse_normalized.split()
             search_words = ville_normalized.split()
             if any(search_word in adresse_words for search_word in search_words if len(search_word) > 2):
                 return boutique
@@ -281,7 +277,7 @@ class EnrichedKnowledgeBase:
         min_distance = float('inf')
         
         for boutique in self.boutiques:
-            coords = resto.get('coordinates')
+            coords = boutique.get('coordinates')
             if not coords or not coords.get('lat') or not coords.get('lon'):
                 continue
             

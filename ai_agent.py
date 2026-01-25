@@ -136,12 +136,10 @@ class AIAgent:
         
         result = f"Nous avons {len(boutiques)} boutique{'s' if len(boutiques) > 1 else ''} à {region_text}:\n\n"
         
-        for resto in boutiques:
-            result += f"• {resto['name']}\n"
-            result += f"   Adresse : {resto['adresse']}\n"
-            result += f"   Téléphone : {resto['telephone']}\n"
-            result += f"   Email : {resto['email']}\n"
-            result += f"   Services : {', '.join(resto.get('services', []))}\n\n"
+        for boutique in boutiques:
+            result += f"• {boutique['name']}\n"
+            result += f"   Adresse : {boutique['adresse']}\n"
+            result += f"   Téléphone : {boutique['telephone']}\n\n"
         
         return result
     
@@ -152,10 +150,10 @@ class AIAgent:
         
         if not results:
             # List all available boutiques
-            all_restos = self.kb.get_all_boutiques()
+            all_boutiques = self.kb.get_all_boutiques()
             return f"Boutique non trouvée pour '{ville}'.\n\n" + \
-                   f"NOS {len(all_restos)} BOUTIQUES DISPONIBLES:\n" + \
-                   "\n".join([f"- {r.get('name', 'N/A')}" for r in all_restos[:10]]) + \
+                   f"NOS {len(all_boutiques)} BOUTIQUES DISPONIBLES:\n" + \
+                   "\n".join([f"- {r.get('name', 'N/A')}" for r in all_boutiques[:10]]) + \
                    "\n\n(10 premiers boutiques affichés)"
         
         # Take best result
@@ -239,10 +237,10 @@ class AIAgent:
                 result += f"{jour.capitalize()} : {horaire}\n"
         else:
             result = "HORAIRES DE NOS BOUTIQUES :\n\n"
-            for resto_hours in hours.get('boutiques', []):
-                result += f"• {resto_hours['name']} ({resto_hours['ville']})\n"
+            for boutique_hours in hours.get('boutiques', []):
+                result += f"• {boutique_hours['name']} ({boutique_hours['ville']})\n"
                 # Display ALL days, not just a sample
-                for jour, horaire in resto_hours.get('horaires', {}).items():
+                for jour, horaire in boutique_hours.get('horaires', {}).items():
                     result += f"  {jour.capitalize()} : {horaire}\n"
                 result += "\n"
         
@@ -530,12 +528,12 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
         # Dynamically load boutique info
         boutiques = self.kb.get_all_boutiques()
         boutiques_info = []
-        for resto in boutiques:
+        for boutique in boutiques:
             # Extract city from boutique name "L''Arbre à Café {City}"
-            name = resto.get('name', '')
+            name = boutique.get('name', '')
             ville = name.replace('L''Arbre à Café', '').strip()
-            telephone = resto.get('telephone', 'N/A')
-            adresse = resto.get('adresse', 'N/A')
+            telephone = boutique.get('telephone', 'N/A')
+            adresse = boutique.get('adresse', 'N/A')
             boutiques_info.append(f"  * {ville} - {adresse} - Tel: {telephone}")
         boutiques_list = "\n".join(boutiques_info)
         
