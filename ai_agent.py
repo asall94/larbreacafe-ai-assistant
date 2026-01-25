@@ -139,7 +139,10 @@ class AIAgent:
         for boutique in boutiques:
             result += f"• {boutique['name']}\n"
             result += f"   Adresse : {boutique['adresse']}\n"
-            result += f"   Téléphone : {boutique['telephone']}\n\n"
+            result += f"   Téléphone : {boutique['telephone']}\n"
+            if boutique.get('url'):
+                result += f"   Lien : <a href=\"{boutique['url']}\" target=\"_blank\">Voir cette boutique</a>\n"
+            result += "\n"
         
         return result
     
@@ -173,6 +176,8 @@ class AIAgent:
             # Only show available fields (no N/A or "Non renseigné")
             if contact.get('adresse'):
                 result += f"Adresse : {contact['adresse']}\n"
+            if contact.get('url'):
+                result += f"Lien : <a href=\"{contact['url']}\" target=\"_blank\">Voir cette boutique</a>\n"
             
             if contact.get('telephone'):
                 result += f"Téléphone : {contact['telephone']}\n"
@@ -325,10 +330,13 @@ RÈGLES IMPORTANTES:
 1. COMPTAGE/LISTE BOUTIQUES:
    - "combien", "nombre", "toutes", "liste", "quelles" → get_boutiques
 
-2. BOUTIQUE SPÉCIFIQUE (exemples auto-générés depuis base):
+2. LIEN/URL BOUTIQUE SPÉCIFIQUE:
+   - "lien", "url", "site", "page" + mention boutique/ville → get_boutique_info avec ville
+
+3. BOUTIQUE SPÉCIFIQUE (exemples auto-générés depuis base):
 {boutique_rules}
 
-3. DÉPARTEMENTS (auto-généré depuis base):
+4. DÉPARTEMENTS (auto-généré depuis base):
 {dept_rules}{arrondissement_rule}
 
 Analyse la question et choisis les meilleurs outils.
