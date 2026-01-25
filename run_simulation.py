@@ -171,9 +171,7 @@ def run_simulation():
             run = response_para.add_run(remaining_text)
             run.font.name = 'Calibri'
             run.font.size = Pt(10.5)
-        
-        doc.add_paragraph()  # Ligne vide
-        
+                
         # Séparateur
         separator = doc.add_paragraph('---')
         sep_run = separator.runs[0]
