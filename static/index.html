@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Assistant virtuel de L'Arbre à Café - Torréfacteur de café de spécialité depuis 2009. Renseignez-vous sur nos boutiques, nos cafés et nos formations barista.">
+    <meta name="theme-color" content="#B8935A">
     <title>L'Arbre à Café - Assistant Virtuel</title>
     <link rel="icon" type="image/png" href="/static/logo.png">
+    <link rel="stylesheet" href="/static/css/animations.css">
     <style>
         * {
             margin: 0;
@@ -149,7 +152,8 @@
             max-width: 70%;
             padding: 12px 18px;
             border-radius: 18px;
-            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
             white-space: pre-wrap;
         }
 
@@ -201,6 +205,8 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .send-button:hover {
@@ -268,6 +274,7 @@
         }
 
         .footer-links a {
+            display: inline-block;
             color: white;
             text-decoration: none;
             margin: 0 15px;
@@ -305,8 +312,18 @@
                 text-align: center;
             }
 
+            .chat-input-container {
+                padding: 12px 15px;
+            }
+
+            .chat-input-form {
+                gap: 8px;
+                align-items: center;
+            }
+
             .send-button {
-                padding: 12px 20px;
+                padding: 12px 16px;
+                font-size: 0.95rem;
             }
 
             .footer-links a {
@@ -318,7 +335,8 @@
 </head>
 <body>
     <div class="header">
-        <img src="/static/logo.png" alt="L'Arbre à Café">
+        <img src="/static/logo.png" alt="Logo L'Arbre à Café">
+        <h1>L'Arbre à Café</h1>
         <p>Votre assistant virtuel pour le café de spécialité</p>
     </div>
 
@@ -328,7 +346,7 @@
             <p>Posez-moi vos questions sur nos boutiques, nos cafés et nos spécialités</p>
         </div>
 
-        <div class="chat-messages" id="chatMessages">
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Conversation avec l'assistant">
             <div class="message bot">
                 <div class="message-content">Bonjour et bienvenue chez L'Arbre à Café.<br>Comment puis-je vous aider ?</div>
             </div>
@@ -362,9 +380,9 @@
 
     <div class="footer">
         <div class="footer-links">
-            <a href="https://larbreacafe.com" target="_blank">Site Officiel</a>
-            <a href="https://www.larbreacafe.com/pages/nos-boutiques" target="_blank">Toutes nos Boutiques</a>
-            <a href="https://www.larbreacafe.com/pages/contact" target="_blank">Contact</a>
+            <a href="https://larbreacafe.com" target="_blank" rel="noopener noreferrer">Site Officiel</a>
+            <a href="https://www.larbreacafe.com/pages/nos-boutiques" target="_blank" rel="noopener noreferrer">Toutes nos Boutiques</a>
+            <a href="https://www.larbreacafe.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact</a>
         </div>
         <p>© 2026 L'Arbre à Café - Torréfaction Artisanale depuis 2009</p>
     </div>
@@ -376,7 +394,7 @@
         const sendButton = document.getElementById('sendButton');
         let conversationId = null;
 
-        // Créer l'indicateur de frappe
+        // Create the typing indicator element
         const typingIndicator = document.createElement('div');
         typingIndicator.className = 'message bot';
         typingIndicator.innerHTML = `
@@ -404,7 +422,7 @@
             messageDiv.appendChild(contentDiv);
             chatMessages.appendChild(messageDiv);
             
-            // Scroll vers le bas avec animation fluide
+            // Smooth scroll to bottom
             chatMessages.scrollTo({
                 top: chatMessages.scrollHeight,
                 behavior: 'smooth'
@@ -427,7 +445,7 @@
         }
 
         async function sendMessage(message) {
-            // Masquer les quick prompts après la première question
+            // Hide quick prompts after the first message
             const quickPrompts = document.getElementById('quickPrompts');
             const quickPromptsLabel = document.getElementById('quickPromptsLabel');
             if (quickPrompts) {
@@ -437,14 +455,14 @@
                 quickPromptsLabel.style.display = 'none';
             }
 
-            // Désactiver le bouton d'envoi
+            // Disable input while waiting for a response
             sendButton.disabled = true;
             chatInput.disabled = true;
 
-            // Ajouter le message de l'utilisateur
+            // Show user message immediately
             addMessage(message, true);
 
-            // Afficher l'indicateur de frappe
+            // Show typing indicator while the bot is responding
             showTypingIndicator();
 
             try {
@@ -465,13 +483,12 @@
 
                 const data = await response.json();
                 
-                // Mettre à jour l'ID de conversation
+                // Track conversation ID for context
                 conversationId = data.conversation_id;
 
-                // Masquer l'indicateur de frappe
                 hideTypingIndicator();
 
-                // Ajouter la réponse du bot
+                // Render bot response (may contain safe HTML links)
                 addMessage(data.response, false);
 
             } catch (error) {
@@ -479,14 +496,14 @@
                 addMessage('Désolé, une erreur est survenue. Veuillez réessayer.', false);
                 console.error('Error:', error);
             } finally {
-                // Réactiver le bouton d'envoi
+                // Re-enable input
                 sendButton.disabled = false;
                 chatInput.disabled = false;
                 chatInput.focus();
             }
         }
 
-        // Gestionnaire pour les quick prompts
+        // Handle quick prompt button clicks
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('quick-prompt-btn')) {
                 const prompt = e.target.getAttribute('data-prompt');
@@ -506,7 +523,7 @@
             }
         });
 
-        // Focus sur l'input au chargement 
+        // Auto-focus input on page load
         chatInput.focus();
     </script>
 </body>
