@@ -156,49 +156,49 @@ class larbrecafIndustrialScraper:
         boutiques = []
         seen_addresses = set()
         
-        # Extraire tous les headings h3 (noms des boutiques)
+        # Extract all h3 headings (boutique names)
         h3_tags = soup.find_all('h3')
-        
+
         for h3 in h3_tags:
-            # Trouver le texte suivant après le h3
+            # Find the text following the h3
             next_text = ""
             for sibling in h3.find_next_siblings(limit=10):
                 text = sibling.get_text(strip=True)
                 if text:
                     next_text += text + "\n"
-                    # Arrêter si on trouve un téléphone (fin de section)
+                    # Stop if a phone number is found (end of section)
                     if re.search(r'0[1-9](?:[\s.]?\d{2}){4}', text):
                         break
-            
-            # Chercher adresse et téléphone dans le texte suivant
+
+            # Search for address and phone number in the following text
             addr_match = re.search(r'([\d]+\s+(?:Rue|Carrefour|Avenue|Boulevard|Place)[^-\n]+?-\s*75\d{3}\s+Paris)', next_text, re.IGNORECASE)
             tel_match = re.search(r'(0[1-9](?:[\s.]?\d{2}){4})', next_text)
-            
+
             if addr_match and tel_match:
                 name = h3.get_text(strip=True)
-                adresse = addr_match.group(1).strip()
-                telephone = tel_match.group(1).strip()
-                
-                # Éviter doublons
-                if adresse in seen_addresses:
+                address = addr_match.group(1).strip()
+                phone = tel_match.group(1).strip()
+
+                # Avoid duplicates
+                if address in seen_addresses:
                     continue
-                seen_addresses.add(adresse)
-                
-                # Extraire code postal
-                cp_match = re.search(r'75(\d{3})', adresse)
-                code_postal = f"75{cp_match.group(1)}" if cp_match else ""
-                
-                # Nettoyer nom (enlever "L'Arbre à Café -" si présent)
+                seen_addresses.add(address)
+
+                # Extract postal code
+                cp_match = re.search(r'75(\d{3})', address)
+                postal_code = f"75{cp_match.group(1)}" if cp_match else ""
+
+                # Clean up name (remove "L'Arbre à Café -" if present)
                 if name.startswith("L'Arbre à Café"):
                     name = name
                 else:
                     name = f"L'Arbre à Café - {name}"
-                
+
                 boutiques.append({
                     "name": name,
-                    "telephone": telephone.replace('.', ' '),
-                    "adresse": adresse,
-                    "code_postal": code_postal,
+                    "phone": phone.replace('.', ' '),
+                    "address": address,
+                    "code_postal": postal_code,
                     "ville": "Paris",
                     "statut": "ouvert",
                     "url": "https://larbreacafe.com/pages/nos-boutiques"

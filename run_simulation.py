@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env python3
-"""Simulation complète du chatbot L'Arbre à Café"""
+"""Complete simulation of the L'Arbre à Café chatbot."""
 
 import requests
 import json
@@ -12,47 +12,47 @@ from docx.oxml.ns import qn
 import re
 
 def add_hyperlink(paragraph, url, text):
-    """Ajoute un hyperlien cliquable dans un paragraphe"""
-    # Créer une relation d'hyperlien
+    """Add a clickable hyperlink to a paragraph."""
+    # Create a hyperlink relationship
     part = paragraph.part
     r_id = part.relate_to(url, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", is_external=True)
-    
-    # Créer l'élément hyperlink
+
+    # Create the hyperlink element
     hyperlink = OxmlElement('w:hyperlink')
     hyperlink.set(qn('r:id'), r_id)
-    
-    # Créer un nouveau run pour le texte du lien
+
+    # Create a new run for the link text
     new_run = OxmlElement('w:r')
-    
-    # Propriétés du run (style lien)
+
+    # Set run properties (link style)
     rPr = OxmlElement('w:rPr')
-    
-    # Couleur bleue
+
+    # Blue color
     color = OxmlElement('w:color')
     color.set(qn('w:val'), '0563C1')
     rPr.append(color)
-    
-    # Souligné
+
+    # Underline
     u = OxmlElement('w:u')
     u.set(qn('w:val'), 'single')
     rPr.append(u)
-    
-    # Police Calibri 11
+
+    # Font Calibri 11
     rFonts = OxmlElement('w:rFonts')
     rFonts.set(qn('w:ascii'), 'Calibri')
     rFonts.set(qn('w:hAnsi'), 'Calibri')
     rPr.append(rFonts)
-    
+
     sz = OxmlElement('w:sz')
     sz.set(qn('w:val'), '21')  # 10.5pt = 21 half-points
     rPr.append(sz)
-    
+
     new_run.append(rPr)
-    
-    # Ajouter le texte
+
+    # Add the text
     new_run.text = text
     hyperlink.append(new_run)
-    
+
     paragraph._p.append(hyperlink)
     return hyperlink
 
@@ -102,7 +102,7 @@ def run_simulation():
                 'status': 'error'
             })
     
-    # Sauvegarder en JSON avec timestamp
+    # Save results to JSON with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     json_filename = f'simulation_results_{timestamp}.json'
     output_data = {
@@ -115,11 +115,11 @@ def run_simulation():
     with open(json_filename, 'w', encoding='utf-8') as f:
         json.dump(output_data, f, indent=2, ensure_ascii=False)
     
-    # Export DOCX
+    # Export results to DOCX
     docx_filename = f'simulation_results_{timestamp}.docx'
     doc = Document()
     
-    # Titre principal - centré et souligné
+    # Main title - centered and underlined
     title = doc.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = title.add_run(f"Agent intelligent pour L'Arbre à Café - Simulation du {datetime.now().strftime('%d/%m/%Y')}")
@@ -127,58 +127,58 @@ def run_simulation():
     run.font.size = Pt(10.5)
     run.underline = True
     
-    doc.add_paragraph()  # Ligne vide
+    doc.add_paragraph()  # Empty line
     
-    # Ajouter chaque question/réponse
+    # Add each question/response pair
     for r in results:
-        # Question
+        # Question text
         question_para = doc.add_paragraph()
         question_run = question_para.add_run(f"Q{r['numero']} : {r['question']}")
         question_run.font.name = 'Calibri'
         question_run.font.size = Pt(10.5)
         
-        doc.add_paragraph()  # Ligne vide
+        doc.add_paragraph()  # Empty line
         
-        # Réponse - traiter les liens HTML
+        # Response - process HTML links
         response_text = r['response']
         response_para = doc.add_paragraph()
         
-        # Parser et ajouter texte avec hyperliens
-        # Pattern pour extraire les liens: <a href="URL" target="_blank">Texte</a>
+        # Parse and add text with hyperlinks
+        # Pattern to extract links: <a href="URL" target="_blank">Text</a>
         link_pattern = r'<a href="([^"]+)"[^>]*>([^<]+)</a>'
         last_pos = 0
         
         for match in re.finditer(link_pattern, response_text):
-            # Texte avant le lien
+            # Text before the link
             before_text = response_text[last_pos:match.start()]
             if before_text:
                 run = response_para.add_run(before_text)
                 run.font.name = 'Calibri'
                 run.font.size = Pt(10.5)
             
-            # Ajouter le lien cliquable avec la fonction add_hyperlink
+            # Add the clickable link using add_hyperlink
             url = match.group(1)
             link_text = match.group(2)
             add_hyperlink(response_para, url, link_text)
             
             last_pos = match.end()
         
-        # Texte après le dernier lien
+        # Text after the last link
         remaining_text = response_text[last_pos:]
         if remaining_text:
-            # Nettoyer les balises restantes
+            # Strip any remaining HTML tags
             remaining_text = re.sub(r'<[^>]+>', '', remaining_text)
             run = response_para.add_run(remaining_text)
             run.font.name = 'Calibri'
             run.font.size = Pt(10.5)
                 
-        # Séparateur
+        # Separator
         separator = doc.add_paragraph('---')
         sep_run = separator.runs[0]
         sep_run.font.name = 'Calibri'
         sep_run.font.size = Pt(10.5)
         
-        doc.add_paragraph()  # Ligne vide
+        doc.add_paragraph()  # Empty line
     
     doc.save(docx_filename)
     
