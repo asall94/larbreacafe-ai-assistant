@@ -1,4 +1,5 @@
-﻿from fastapi import FastAPI, HTTPException, BackgroundTasks
+﻿import asyncio
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
@@ -31,25 +32,30 @@ if os.path.exists("static"):
 
 agent = None
 
-@app.on_event("startup")
-async def startup_event():
+def _init_agent_sync():
+    """Run heavy initialization synchronously in a thread so it doesn't block the event loop."""
     global agent
     api_key = os.getenv("OPENAI_API_KEY")
     website_url = os.getenv("WEBSITE_URL", "https://larbreacafe.com")
-    
+
     if not api_key:
         logger.warning("OPENAI_API_KEY not set - agent initialization skipped")
         return
-    
-    logger.info("Initializing AI agent...")
-    
+
+    logger.info("Initializing AI agent in background...")
     try:
         agent = AIAgent(openai_api_key=api_key, website_url=website_url)
-        # Enriched KB already loaded in __init__, no need to scrape
         boutique_count = len(agent.kb.get_all_boutiques())
         logger.info("Agent initialized successfully", extra={"boutique_count": boutique_count})
     except Exception as e:
         logger.error("Failed to initialize agent", extra={"error_type": type(e).__name__, "error_message": str(e)}, exc_info=True)
+
+@app.on_event("startup")
+async def startup_event():
+    # Run the heavy initialization in a thread pool so gunicorn marks the worker
+    # as ready immediately and the 30s boot timeout is never hit.
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, _init_agent_sync)
 
 class ChatMessage(BaseModel):
     message: str
@@ -82,7 +88,7 @@ async def chat(chat_message: ChatMessage):
     global agent
     
     if agent is None:
-        raise HTTPException(status_code=503, detail="AI Agent not initialized")
+        raise HTTPException(status_code=503, detail="Agent is still initializing, please retry in a few seconds")
     
     try:
         start_time = datetime.now()

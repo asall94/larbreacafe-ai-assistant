@@ -26,8 +26,8 @@ class EnrichedKnowledgeBase:
 
         # Initialize the RAG Engine (MANDATORY)
         print("Initializing RAG Engine...")
-        # Force rebuild based on environment variable (default: True in production)
-        force_rebuild = os.getenv('REBUILD_EMBEDDINGS', 'true').lower() == 'true'
+        # Force rebuild based on environment variable (default: False - relies on cache hash check)
+        force_rebuild = os.getenv('REBUILD_EMBEDDINGS', 'false').lower() == 'true'
         self.rag_engine = RAGEngine(self.complete_file, force_rebuild=force_rebuild)
         print("RAG Engine active - Semantic search available")
 
