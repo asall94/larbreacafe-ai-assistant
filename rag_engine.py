@@ -37,6 +37,9 @@ class RAGEngine:
         self.index = None
         self.embeddings = None
 
+        # Build or load the FAISS index from cache
+        self._build_or_load_index()
+
     def _load_knowledge(self) -> Dict:
         """Load the knowledge base JSON."""
         with open(self.knowledge_file, 'r', encoding='utf-8') as f:
