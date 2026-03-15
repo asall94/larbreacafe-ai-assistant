@@ -537,9 +537,9 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
         boutiques = self.kb.get_all_boutiques()
         boutiques_info = []
         for boutique in boutiques:
-            # Extract city from boutique name "L''Arbre à Café {City}"
+            # Extract city from boutique name "L'Arbre à Café {City}"
             name = boutique.get('name', '')
-            ville = name.replace('L''Arbre à Café', '').strip()
+            ville = name.replace("L'Arbre à Café", '').strip()
             telephone = boutique.get('telephone', 'N/A')
             adresse = boutique.get('adresse', 'N/A')
             boutiques_info.append(f"  * {ville} - {adresse} - Tel: {telephone}")

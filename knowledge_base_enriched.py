@@ -20,6 +20,7 @@ class EnrichedKnowledgeBase:
         # Adapt to the new structure
         self.boutiques = self.data.get('boutiques', [])
         self.general_info = self.data.get('informations_generales', {})
+        self.infos_generales = self.general_info
 
         # Maintain compatibility with the old system
         self.documents = self._create_documents_from_pages()
@@ -111,9 +112,9 @@ class EnrichedKnowledgeBase:
         return self.boutiques
 
     def _extract_ville_from_name(self, name: str) -> str:
-        """Extract city from boutique name 'L''Arbre à Café City'"""
-        # Remove 'L''Arbre à Café' prefix
-        ville = name.replace('L''Arbre à Café', '').strip()
+        """Extract city from boutique name 'L\'Arbre à Café City'"""
+        # Remove "L'Arbre à Café" prefix
+        ville = name.replace("L'Arbre à Café", '').strip()
         return ville
 
     def get_boutique_by_ville(self, ville: str) -> Optional[Dict]:
@@ -167,11 +168,6 @@ class EnrichedKnowledgeBase:
                 return boutique
 
         return None
-
-    # Alias for backward compatibility
-    def get_boutique_by_ville(self, ville: str) -> Optional[Dict]:
-        """Alias for backward compatibility"""
-        return self.get_boutique_by_ville(ville)
 
     def get_contact_info(self, ville: Optional[str] = None) -> Dict:
         """Return contact info (for boutique or general)"""
@@ -300,11 +296,6 @@ class EnrichedKnowledgeBase:
             'telephone': nearest.get('telephone', ''),
             'url': nearest.get('url', '')
         }
-
-    # Alias for backward compatibility
-    def find_nearest_boutique(self, ville_reference: str) -> Dict:
-        """Alias for backward compatibility"""
-        return self.find_nearest_boutique(ville_reference)
 
     # Compatibility methods with old system
     def add_documents(self, documents: List[Dict]):
