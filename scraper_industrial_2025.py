@@ -17,6 +17,7 @@ class larbrecafIndustrialScraper:
         self.visited_urls: Set[str] = set()
         self.all_pages_content = {}
         self.boutiques = []
+        self.boutique_names_seen: Set[str] = set()  # Dedup guard
         self.produits = []
         self.geocoding_cache = {}  # Cache for Nominatim API calls
         self.max_depth = 2  # Maximum crawl depth (increased for complete coverage)
@@ -291,13 +292,22 @@ class larbrecafIndustrialScraper:
                         if '/nos-boutiques' in url.lower():
                             print(f"    [NOS-BOUTIQUES PAGE] Extracting all boutiques...")
                             boutiques_extracted = self.extract_all_boutiques_from_page(soup)
-                            self.boutiques.extend(boutiques_extracted)
-                            print(f"    Extracted {len(boutiques_extracted)} boutiques")
+                            added = 0
+                            for b in boutiques_extracted:
+                                key = b.get('name', '').strip()
+                                if key and key not in self.boutique_names_seen:
+                                    self.boutique_names_seen.add(key)
+                                    self.boutiques.append(b)
+                                    added += 1
+                            print(f"    Extracted {added} boutiques (skipped {len(boutiques_extracted) - added} duplicates)")
                         elif self.is_boutique_page(url, soup):
                             print(f"    [BOUTIQUE DETECTED] {url}")
                             boutique_data = self.extract_boutique_data_from_soup(url, soup)
                             if boutique_data:
-                                self.boutiques.append(boutique_data)
+                                key = boutique_data.get('name', '').strip()
+                                if key and key not in self.boutique_names_seen:
+                                    self.boutique_names_seen.add(key)
+                                    self.boutiques.append(boutique_data)
                     except:
                         pass
                 

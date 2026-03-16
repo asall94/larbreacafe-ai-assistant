@@ -14,7 +14,7 @@ Deux grandes familles de solutions ont été évaluées :
 - **Services vectoriels managés** : Pinecone, Weaviate, Qdrant Cloud, ChromaDB Cloud
 - **Index local** : FAISS (Facebook AI Similarity Search), open-source, embarqué dans le processus Python
 
-Le volume de données à indexer est maîtrisé : ~98 pages scrapées + 5 boutiques = quelques centaines de documents.
+Le volume de données à indexer est maîtrisé : ~836 pages scrapées + 5 boutiques = quelques milliers de documents.
 
 ---
 
@@ -33,7 +33,7 @@ Le volume de données à indexer est maîtrisé : ~98 pages scrapées + 5 boutiq
 | Dépendances externes | Aucune | Clé API + réseau + SLA tiers |
 | Contrôle des données | Total (données L'Arbre à Café) | Données envoyées vers cloud |
 | Complexité opérationnelle | Faible (fichier cache pkl) | Élevée (gestion du cluster) |
-| Scalabilité nécessaire | Faible (KB stable, ~98 pages) | Pertinente à grande échelle |
+| Scalabilité nécessaire | Modérée (KB ~836 pages) | Pertinente à grande échelle |
 
 La taille de la base de connaissance (corpus de taille fixe, pas de millions de documents) rend inutile la scalabilité distribuée d'un service cloud.
 

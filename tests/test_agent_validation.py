@@ -20,11 +20,11 @@ def _make_agent():
         "94": "Val-de-Marne",
     }
     agent.kb.get_all_boutiques.return_value = [
-        {"name": "L'Arbre à Café Rue du Nil"},
-        {"name": "L'Arbre à Café Rue des Martyrs"},
-        {"name": "L'Arbre à Café Le Bon Marché Rive Gauche"},
-        {"name": "L'Arbre à Café Rue Oberkampf"},
-        {"name": "L'Arbre à Café Carrefour de l'Odéon"},
+        {"name": "L'Arbre à Café - Rue du Nil"},
+        {"name": "L'Arbre à Café - Le Bon Marché Rive Gauche"},
+        {"name": "L'Arbre à Café - Rue des Martyrs"},
+        {"name": "L'Arbre à Café - Rue Oberkampf"},
+        {"name": "L'Arbre à Café - Carrefour de l'Odéon"},
     ]
     agent.kb.get_boutique_by_ville = MagicMock(return_value=None)
     agent.get_boutique_info = MagicMock(

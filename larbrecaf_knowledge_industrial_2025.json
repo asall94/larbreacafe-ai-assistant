@@ -2,53 +2,8 @@
   "version": "4.0_industrial",
   "date_scraping": "2026-03-16 03:44:41",
   "total_pages_scrapees": 836,
-  "total_boutiques": 10,
+  "total_boutiques": 5,
   "boutiques": [
-    {
-      "name": "L'Arbre à Café - Rue du Nil",
-      "phone": "01 84 17 24 17",
-      "address": "10 Rue du Nil - 75002 Paris",
-      "code_postal": "75002",
-      "ville": "Paris",
-      "statut": "ouvert",
-      "url": "https://larbreacafe.com/pages/nos-boutiques"
-    },
-    {
-      "name": "L'Arbre à Café - Le Bon Marché Rive Gauche",
-      "phone": "07 43 36 47 59",
-      "address": "24 rue de Sèvres - 75007 Paris",
-      "code_postal": "75007",
-      "ville": "Paris",
-      "statut": "ouvert",
-      "url": "https://larbreacafe.com/pages/nos-boutiques"
-    },
-    {
-      "name": "L'Arbre à Café - Rue des Martyrs",
-      "phone": "01 85 09 00 41",
-      "address": "35 rue des Martyrs - 75009 Paris",
-      "code_postal": "75009",
-      "ville": "Paris",
-      "statut": "ouvert",
-      "url": "https://larbreacafe.com/pages/nos-boutiques"
-    },
-    {
-      "name": "L'Arbre à Café - Rue Oberkampf",
-      "phone": "01 88 33 91 81",
-      "address": "61 rue Oberkampf - 75011 Paris",
-      "code_postal": "75011",
-      "ville": "Paris",
-      "statut": "ouvert",
-      "url": "https://larbreacafe.com/pages/nos-boutiques"
-    },
-    {
-      "name": "L'Arbre à Café - Carrefour de l'Odéon",
-      "phone": "01 85 09 01 17",
-      "address": "15 Carrefour de l'Odéon - 75006 Paris",
-      "code_postal": "75006",
-      "ville": "Paris",
-      "statut": "ouvert",
-      "url": "https://larbreacafe.com/pages/nos-boutiques"
-    },
     {
       "name": "L'Arbre à Café - Rue du Nil",
       "phone": "01 84 17 24 17",

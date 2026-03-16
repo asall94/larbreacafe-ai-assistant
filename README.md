@@ -68,7 +68,7 @@ Voir DEPLOYMENT.md pour Render.com
 - **Site**: https://larbreacafe.com
 - **Méthode**: Crawling automatique (pas de sitemap)
 - **Output**: `larbrecaf_knowledge_industrial_2025.json`
-- **Dernière exécution**: 2026-03-02 (98 pages, 5 boutiques)
+- **Dernière exécution**: 2026-03-16 (836 pages, 5 boutiques)
 
 ## Outils agentiques (6)
 
