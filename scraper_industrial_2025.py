@@ -19,7 +19,7 @@ class larbrecafIndustrialScraper:
         self.boutiques = []
         self.produits = []
         self.geocoding_cache = {}  # Cache for Nominatim API calls
-        self.max_depth = 1  # Maximum crawl depth (increased for complete coverage)
+        self.max_depth = 2  # Maximum crawl depth (increased for complete coverage)
         self.max_pages = None  # No limit - scrape everything relevant
         
         # Pages to ignore (files, external resources)
