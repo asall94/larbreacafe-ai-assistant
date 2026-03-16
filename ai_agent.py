@@ -64,6 +64,11 @@ class AIAgent:
                 "name": "find_nearest_boutique",
                 "description": "Trouve le boutique L''Arbre à Café le plus proche d'une ville donnée",
                 "parameters": {"ville_reference": "Nom de la ville de référence"}
+            },
+            {
+                "name": "get_general_info",
+                "description": "Infos générales : code promo, réduction première commande, livraison, services disponibles, réseaux sociaux, programme fidélité, concept de la marque",
+                "parameters": {}
             }
         ]
     
@@ -205,6 +210,41 @@ class AIAgent:
         
         return result
     
+    def get_general_info(self) -> str:
+        """Retourne les informations générales depuis informations_generales de la KB"""
+        gi = self.kb.general_info
+        if not gi:
+            return "Informations générales non disponibles."
+
+        lines = []
+
+        if gi.get('concept'):
+            lines.append(f"Concept : {gi['concept']}")
+
+        if gi.get('programme_fidelite'):
+            lines.append(f"Programme fidélité : {gi['programme_fidelite']}")
+
+        if gi.get('reduction_premiere_commande'):
+            lines.append(f"Réduction première commande : {gi['reduction_premiere_commande']}")
+
+        if gi.get('services_disponibles'):
+            services = ', '.join(gi['services_disponibles'])
+            lines.append(f"Services disponibles : {services}")
+
+        if gi.get('reseaux_sociaux'):
+            rs = gi['reseaux_sociaux']
+            rs_parts = []
+            if rs.get('instagram'):
+                rs_parts.append(f'Instagram : <a href="{rs["instagram"]}" target="_blank">{rs["instagram"]}</a>')
+            if rs.get('facebook'):
+                rs_parts.append(f'Facebook : <a href="{rs["facebook"]}" target="_blank">{rs["facebook"]}</a>')
+            if rs.get('tiktok'):
+                rs_parts.append(f'TikTok : <a href="{rs["tiktok"]}" target="_blank">{rs["tiktok"]}</a>')
+            if rs_parts:
+                lines.append("Réseaux sociaux :\n" + "\n".join(rs_parts))
+
+        return "\n\n".join(lines)
+
     def find_nearest_boutique(self, ville_reference: str) -> str:
         """Find nearest L''Arbre à Café boutique from a reference city"""
         result = self.kb.find_nearest_boutique(ville_reference)
@@ -265,6 +305,8 @@ class AIAgent:
             return self.get_hours(parameters.get("ville"))
         elif tool_name == "find_nearest_boutique":
             return self.find_nearest_boutique(parameters.get("ville_reference", ""))
+        elif tool_name == "get_general_info":
+            return self.get_general_info()
         else:
             logger.error("Unknown tool requested", extra={"tool_name": tool_name})
             return "Je n'ai pas pu traiter cette demande. Pourriez-vous reformuler votre question ?"
@@ -329,6 +371,10 @@ RÈGLES IMPORTANTES:
 
 1. COMPTAGE/LISTE BOUTIQUES:
    - "combien", "nombre", "toutes", "liste", "quelles" → get_boutiques
+
+1b. INFOS GÉNÉRALES (code promo, réduction, livraison, services, réseaux sociaux, fidélité, concept):
+   - "code promo", "réduction", "première commande", "livraison offerte", "services", "sur place",
+     "Instagram", "Facebook", "TikTok", "réseaux sociaux", "grain de riz", "fidélité" → get_general_info
 
 2. LIEN/URL BOUTIQUE SPÉCIFIQUE:
    - "lien", "url", "site", "page" + mention boutique/ville → get_boutique_info avec ville

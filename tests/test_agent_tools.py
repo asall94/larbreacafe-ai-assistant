@@ -133,13 +133,13 @@ class TestGetBoutiquesFormatting(unittest.TestCase):
 
 
 class TestAgentTools6Defined(unittest.TestCase):
-    """The agent must expose exactly 6 tools."""
+    """The agent must expose exactly 7 tools."""
 
     def setUp(self):
         self.agent = _make_agent()
 
     def test_exactly_6_tools_defined(self):
-        self.assertEqual(len(self.agent.tools), 6)
+        self.assertEqual(len(self.agent.tools), 7)
 
     def test_all_expected_tool_names_present(self):
         tool_names = {t["name"] for t in self.agent.tools}
@@ -150,6 +150,7 @@ class TestAgentTools6Defined(unittest.TestCase):
             "get_contact",
             "get_hours",
             "find_nearest_boutique",
+            "get_general_info",
         }
         self.assertEqual(tool_names, expected)
 
