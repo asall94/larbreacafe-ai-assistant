@@ -402,7 +402,7 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
                     {"role": "user", "content": planning_prompt}
                 ],
                 temperature=0.3,
-                max_tokens=300
+                max_tokens=1500
             )
             
             plan_text = response.choices[0].message.content.strip()
@@ -643,7 +643,7 @@ RESPONSE STYLE: First-person plural, concise, conversational. Respect detected l
                 model="gpt-4o-mini",
                 messages=messages,
                 temperature=0.1,  # Minimal for consistency while keeping some naturalness
-                max_tokens=500
+                max_tokens=1500
             )
             
             assistant_message = response.choices[0].message.content
