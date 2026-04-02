@@ -19,7 +19,7 @@ Query → Planning LLM (T=0.3) → Sélection outils (max 3) → Exécution RAG/
 ## Stack
 
 - **Backend**: FastAPI (Python 3.12) + orchestration agentique sur mesure
-- **Outils**: 6 outils spécialisés (voir tableau ci-dessous)
+- **Outils**: 7 outils spécialisés (voir tableau ci-dessous)
 - **RAG**: FAISS IndexFlatL2 (<10ms latence) + embeddings OpenAI text-embedding-ada-002
 - **LLM**: GPT-4o-mini (temp=0.1 génération / temp=0.3 planning)
 - **Validation**: 5 couches anti-hallucination post-génération
@@ -70,9 +70,9 @@ Voir DEPLOYMENT.md pour Render.com
 - **Output**: `larbrecaf_knowledge_industrial_2025.json`
 - **Dernière exécution**: 2026-03-16 (836 pages, 5 boutiques)
 
-## Outils agentiques (6)
+## Outils agentiques (7)
 
-Les 6 outils correspondent aux intentions client identifiées. Le LLM de planning sélectionne
+Les 7 outils correspondent aux intentions client identifiées. Le LLM de planning sélectionne
 jusqu'à 3 outils par requête et paramètre chaque appel dynamiquement (ville, query...).
 
 | Outil | Intention couverte |
@@ -83,18 +83,18 @@ jusqu'à 3 outils par requête et paramètre chaque appel dynamiquement (ville, 
 | `get_contact` | Téléphone et adresse d'une boutique spécifique |
 | `get_hours` | Horaires d'ouverture (toutes boutiques ou spécifique) |
 | `find_nearest_boutique` | Boutique la plus proche via Haversine + géocodage Nominatim |
+| `get_general_info` | Concept, réduction 1ère commande, services, réseaux sociaux |
 
 ## Structure
 
 ```
-ai_agent.py                          # 6 outils agentiques + validation 5 couches
+ai_agent.py                          # 7 outils agentiques + validation 5 couches
 rag_engine.py                        # FAISS IndexFlatL2 (<10ms)
 knowledge_base_enriched.py           # Méthodes RAG domaine
 scraper_industrial_2025.py           # Scraper JSON-LD + HTML
 larbrecaf_knowledge_industrial_2025.json  # Source de vérité unique
 main.py                              # Serveur FastAPI
 logger_config.py                     # Logging JSON structuré
-validate_responses.py                # Validation réponses standalone
 run_simulation.py                    # Simulation de conversations
 tests/                               # 71 tests unitaires (pytest)
 docs/adr/                            # 6 Architecture Decision Records
