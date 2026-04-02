@@ -110,7 +110,7 @@ class AIAgent:
             # Skip context enrichment for now - would need conversation_id parameter
             pass
         
-        results = self.kb.search(query, limit=5)
+        results = self.kb.search(query, limit=8)
         
         if not results:
             return "[HORS_PERIMETRE] Cette information n'est pas disponible sur notre site web. Pour des questions spécifiques (parking, événements, réservations privées...), contactez directement le boutique concerné."
@@ -220,6 +220,11 @@ class AIAgent:
 
         if gi.get('concept'):
             lines.append(f"Concept : {gi['concept']}")
+
+        if gi.get('livraison_offerte_seuil'):
+            lines.append(f"Livraison : {gi['livraison_offerte_seuil']}")
+        else:
+            lines.append("Livraison : offerte d\u00e8s 49\u20ac TTC en France m\u00e9tropolitaine")
 
         if gi.get('programme_fidelite'):
             lines.append(f"Programme fidélité : {gi['programme_fidelite']}")
@@ -375,6 +380,9 @@ RÈGLES IMPORTANTES:
 1b. INFOS GÉNÉRALES (code promo, réduction, livraison, services, réseaux sociaux, fidélité, concept):
    - "code promo", "réduction", "première commande", "livraison offerte", "services", "sur place",
      "Instagram", "Facebook", "TikTok", "réseaux sociaux", "grain de riz", "fidélité" → get_general_info
+
+1c. OFFRE PROFESSIONNELS (hôtels, restaurants, B2B, traiteur, franchise):
+   - "professionnels", "restauration", "hôtel", "restaurant", "B2B", "traiteur", "franchise" → search_knowledge avec la query complète
 
 2. LIEN/URL BOUTIQUE SPÉCIFIQUE:
    - "lien", "url", "site", "page" + mention boutique/ville → get_boutique_info avec ville
@@ -665,6 +673,8 @@ RESPONSE STYLE: First-person plural, concise, conversational. Respect detected l
             import re
             # Convert markdown links [text](url) to HTML <a href="url">text</a>
             assistant_message = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" target="_blank">\1</a>', assistant_message)
+            # Normalize malformed target="blank" to target="_blank"
+            assistant_message = re.sub(r'target="blank"', 'target="_blank"', assistant_message)
             # Remove **bold**, __bold__
             assistant_message = re.sub(r'\*\*([^*]+)\*\*', r'\1', assistant_message)
             assistant_message = re.sub(r'__([^_]+)__', r'\1', assistant_message)

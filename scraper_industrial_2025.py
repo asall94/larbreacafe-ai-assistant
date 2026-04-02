@@ -19,6 +19,7 @@ class larbrecafIndustrialScraper:
         self.boutiques = []
         self.boutique_names_seen: Set[str] = set()  # Dedup guard
         self.produits = []
+        self.social_links: Dict = {}  # Scraped from footer
         self.geocoding_cache = {}  # Cache for Nominatim API calls
         self.max_depth = 2  # Maximum crawl depth (increased for complete coverage)
         self.max_pages = None  # No limit - scrape everything relevant
@@ -60,6 +61,101 @@ class larbrecafIndustrialScraper:
         
         return True
     
+    def _extract_general_info_from_pages(self) -> Dict:
+        """Extract informations_generales from scraped page content - no hardcoded values"""
+        concept = None
+        programme_fidelite = None
+        reduction_premiere_commande = None
+
+        # Concept: prefer homepage meta_description, fallback to first h1
+        for base in (self.base_url, self.base_url + '/'):
+            homepage_data = self.all_pages_content.get(base)
+            if homepage_data:
+                if homepage_data.get('meta_description'):
+                    concept = homepage_data['meta_description']
+                elif homepage_data.get('headings'):
+                    h1s = [h['text'] for h in homepage_data['headings'] if h['level'] == 'h1']
+                    if h1s:
+                        concept = h1s[0]
+                break
+
+        service_keywords = {
+            'sur place': 'Sur place',
+            '\u00e0 emporter': '\u00c0 emporter',
+            'livraison': 'Livraison',
+            'drive': 'Drive',
+            'click and collect': 'Click & Collect',
+        }
+        found_services: Set[str] = set()
+
+        for url, content in self.all_pages_content.items():
+            text = content.get('content', '')
+            text_lower = text.lower()
+
+            # Programme fidelite: line mentioning grain de riz + monetary/point context
+            if not programme_fidelite and 'grain de riz' in text_lower:
+                for line in text.split('\n'):
+                    ls = line.strip()
+                    if 'grain de riz' in ls.lower() and any(
+                        kw in ls.lower() for kw in ['\u20ac', 'euro', 'point', 'd\u00e9pens']
+                    ):
+                        programme_fidelite = ls
+                        break
+                if not programme_fidelite:
+                    for line in text.split('\n'):
+                        if 'grain de riz' in line.lower() and line.strip():
+                            programme_fidelite = line.strip()
+                            break
+
+            # Reduction premiere commande: code promo pattern
+            if not reduction_premiere_commande:
+                match = re.search(
+                    r'(-\d+\s*%[^\n]*(?:premi[e\u00e8]re|1\u00e8re|code)[^\n]*'
+                    r'|(?:code|promo|r[\u00e9e]duction)[^\n]*-?\d+\s*%[^\n]*'
+                    r'|(?:code|promo)\s+[\w]+\d+[^\n]*)',
+                    text, re.IGNORECASE
+                )
+                if match:
+                    reduction_premiere_commande = match.group(0).strip()
+
+            # Services disponibles
+            for keyword, label in service_keywords.items():
+                if keyword in text_lower:
+                    found_services.add(label)
+
+        order = ['Sur place', '\u00c0 emporter', 'Livraison', 'Drive', 'Click & Collect']
+        services_disponibles = [s for s in order if s in found_services]
+
+        return {
+            "concept": concept,
+            "programme_fidelite": programme_fidelite,
+            "reduction_premiere_commande": reduction_premiere_commande,
+            "services_disponibles": services_disponibles,
+            "reseaux_sociaux": self.social_links
+        }
+
+    def _extract_social_links(self, soup: BeautifulSoup) -> Dict:
+        """Extract social media links from raw page soup (before footer removal)"""
+        social_domains = {
+            'instagram': 'instagram.com',
+            'facebook': 'facebook.com',
+            'tiktok': 'tiktok.com',
+            'youtube': 'youtube.com',
+            'twitter': 'twitter.com',
+            'x.com': 'x.com',
+            'linkedin': 'linkedin.com',
+        }
+        found = {}
+        # Check footer first, then full page as fallback
+        footer = soup.find('footer')
+        search_scope = footer if footer else soup
+        for a in search_scope.find_all('a', href=True):
+            href = a['href'].strip()
+            for key, domain in social_domains.items():
+                if domain in href and key not in found:
+                    found[key] = href
+        return found
+
     def clean_text(self, text: str) -> str:
         """Clean extracted text"""
         # Remove multiple spaces
@@ -75,7 +171,11 @@ class larbrecafIndustrialScraper:
             response = requests.get(url, headers=self.headers, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'html.parser')
-            
+
+            # Extract meta description before any element removal
+            meta_desc_tag = soup.find('meta', attrs={'name': 'description'})
+            meta_description = meta_desc_tag.get('content', '').strip() if meta_desc_tag else ""
+
             # Remove unnecessary elements
             for element in soup(['script', 'style', 'nav', 'footer', 'iframe', 'noscript']):
                 element.decompose()
@@ -112,6 +212,7 @@ class larbrecafIndustrialScraper:
             return {
                 'url': url,
                 'title': title_text,
+                'meta_description': meta_description,
                 'headings': headings,
                 'content': text_content[:5000],  # Limit to 5000 chars
                 'lists': lists,
@@ -250,6 +351,19 @@ class larbrecafIndustrialScraper:
         print("COMPLETE INDUSTRIAL SCRAPING - DYNAMIC DISCOVERY")
         print("=" * 60)
         
+        # Extract social links from homepage footer before any stripping
+        print(f"\n[0/2] Extracting social links from homepage footer...")
+        try:
+            resp = requests.get(self.base_url, headers=self.headers, timeout=15)
+            raw_soup = BeautifulSoup(resp.content, 'html.parser')
+            self.social_links = self._extract_social_links(raw_soup)
+            if self.social_links:
+                print(f"  [OK] Social links found: {list(self.social_links.keys())}")
+            else:
+                print("  [WARN] No social links found in footer")
+        except Exception as e:
+            print(f"  [WARN] Could not extract social links: {e}")
+
         # Start recursive discovery from base URL
         print(f"\n[1/2] Discovering all pages from {self.base_url}...")
         urls_to_process = [self.base_url]
@@ -632,17 +746,7 @@ class larbrecafIndustrialScraper:
             "total_boutiques": len(self.boutiques),
             "boutiques": self.boutiques,
             "pages_par_categorie": categorized_pages,
-            "informations_generales": {
-                "concept": "CafÃ© de SpÃ©cialitÃ© - TorrÃ©facteur Artisanal depuis 2009",
-                "programme_fidelite": "1â‚¬ dÃ©pensÃ© = 1 grain de riz (point)",
-                "reduction_premiere_commande": "-10% avec code larbrecaf10",
-                "services_disponibles": ["Sur place", "Ã€ emporter", "Livraison", "Drive"],
-                "reseaux_sociaux": {
-                    "instagram": "https://www.instagram.com/larbrecaf/",
-                    "facebook": "https://www.facebook.com/larbrecafParis/",
-                    "tiktok": "https://www.tiktok.com/@larbrecaf"
-                }
-            }
+            "informations_generales": self._extract_general_info_from_pages()
         }
         
         filename = "larbrecaf_knowledge_industrial_2025.json"
