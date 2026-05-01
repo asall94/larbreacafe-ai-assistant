@@ -30,7 +30,7 @@ Règles absolues :
 
 ```
 larbreacafe.com (site officiel)
-       ↓ scraper_industrial_2025.py (JSON-LD + HTML parser)
+       ↓ scraper_industrial_2026.py (JSON-LD + HTML parser)
 larbrecaf_knowledge_industrial_2025.json  ← SEULE source de vérité
        ↓ RAGEngine._build_or_load_index()
 FAISS IndexFlatL2 (+ embeddings_cache.pkl)

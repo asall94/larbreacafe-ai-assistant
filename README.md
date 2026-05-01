@@ -41,7 +41,7 @@ cp .env.example .env
 #   WEBSITE_URL=https://larbreacafe.com
 
 # 3. Scraping + Build KB
-python scraper_industrial_2025.py
+python scraper_industrial_2026.py
 
 # 4. Lancer serveur
 python main.py
@@ -102,7 +102,7 @@ jusqu'à 3 outils par requête et paramètre chaque appel dynamiquement (ville, 
 ai_agent.py                          # 7 outils agentiques + validation 5 couches
 rag_engine.py                        # FAISS IndexFlatL2 (<10ms)
 knowledge_base_enriched.py           # Méthodes RAG domaine
-scraper_industrial_2025.py           # Scraper JSON-LD + HTML
+scraper_industrial_2026.py           # Scraper JSON-LD + HTML
 larbrecaf_knowledge_industrial_2025.json  # Source de vérité unique
 main.py                              # Serveur FastAPI
 logger_config.py                     # Logging JSON structuré
