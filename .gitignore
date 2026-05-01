@@ -39,10 +39,6 @@ htmlcov/
 .coverage
 .pytest_cache/
 
-# Simulation results
-*simulation*
-*_Q&R*
-
 # Cache files
 embeddings_cache.pkl
 
@@ -51,6 +47,11 @@ venv/
 
 # Python cache
 __pycache__/
+
+
+# Simulation results
+*simulation*
+*_Q&R*
 
 # Autres
 Résumé du projet.png

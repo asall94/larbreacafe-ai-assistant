@@ -36,7 +36,9 @@ pip install -r requirements.txt
 
 # 2. Configuration
 cp .env.example .env
-# Ajouter OPENAI_API_KEY dans .env
+# Variables requises dans .env :
+#   OPENAI_API_KEY=sk-...
+#   WEBSITE_URL=https://larbreacafe.com
 
 # 3. Scraping + Build KB
 python scraper_industrial_2025.py
@@ -46,6 +48,15 @@ python main.py
 ```
 
 Server: http://localhost:8002
+
+## API Endpoints
+
+| Méthode | Route | Description |
+|---|---|---|
+| `POST` | `/chat` | Envoie un message, retourne la réponse du chatbot |
+| `GET` | `/health` | Health check (utilisé par UptimeRobot) |
+| `GET` | `/metrics` | Métriques runtime (uptime, boutiques chargées) |
+| `POST` | `/refresh-knowledge` | Recharge la KB sans redémarrer le serveur |
 
 ## Tests
 

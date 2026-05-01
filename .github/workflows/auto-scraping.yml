@@ -1,9 +1,8 @@
-﻿name: Auto Scraping Mensuel L''Arbre à Café
+﻿name: Auto Scraping Hebdomadaire L''Arbre à Café
 
 on:
-  # Scraping automatique désactivé (risque perte données horaires/prix)
-  # schedule:
-  #   - cron: '0 2 * * 4'
+  schedule:
+    - cron: '0 4 * * 1'  # Chaque lundi à 4h00 UTC
   
   # Permet de lancer manuellement depuis GitHub
   workflow_dispatch:
