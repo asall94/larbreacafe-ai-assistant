@@ -515,8 +515,17 @@ Réponds UNIQUEMENT avec un JSON valide (pas de texte avant ou après):
                         dept = dept_match.group(1) if dept_match else user_query
                         corrected = self.get_boutique_info(dept)
                         return corrected, False
-                    # Otherwise return generic message based on context
-                    return "Oui, nous avons plusieurs boutiques. Pour plus de détails sur une boutique spécifique, précisez la ville ou le département.", False
+                    # Otherwise (e.g. landmark queries like "tour eiffel" that don't
+                    # map to a known ville/département) list all boutiques with their
+                    # addresses so the user can pick the closest one themselves
+                    all_boutiques = self.kb.get_all_boutiques()
+                    lines = []
+                    for b in all_boutiques:
+                        nom = b.get('name', '')
+                        addr = b.get('adresse', '') or b.get('address', '')
+                        lines.append(f"- {nom}" + (f" ({addr})" if addr else ""))
+                    listing = "\n".join(lines)
+                    return f"Voici toutes nos boutiques :\n{listing}\n\nPrécisez une ville ou un quartier pour plus de détails sur la plus proche.", False
         
         # 2. Check schedule inconsistencies
         import re

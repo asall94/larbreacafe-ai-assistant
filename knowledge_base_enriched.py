@@ -18,7 +18,7 @@ class EnrichedKnowledgeBase:
         self.data = self._load_complete_knowledge()
 
         # Adapt to the new structure
-        self.boutiques = self.data.get('boutiques', [])
+        self.boutiques = self._normalize_boutiques(self.data.get('boutiques', []))
         self.general_info = self.data.get('informations_generales', {})
         self.infos_generales = self.general_info
 
@@ -33,6 +33,18 @@ class EnrichedKnowledgeBase:
         print("RAG Engine active - Semantic search available")
 
         print(f"Enriched knowledge base loaded: {len(self.boutiques)} boutiques")
+
+    def _normalize_boutiques(self, boutiques: List[Dict]) -> List[Dict]:
+        """Normalize field names across scraper schema versions.
+
+        Some scraper runs output 'address'/'phone' instead of the
+        'adresse'/'telephone' keys the rest of the codebase expects.
+        """
+        for boutique in boutiques:
+            boutique.setdefault('adresse', boutique.get('address', ''))
+            boutique.setdefault('telephone', boutique.get('phone', ''))
+            boutique.setdefault('email', '')
+        return boutiques
 
     def _create_documents_from_pages(self) -> List[Dict]:
         """Create documents from all scraped pages"""
@@ -113,9 +125,9 @@ class EnrichedKnowledgeBase:
 
     def _extract_ville_from_name(self, name: str) -> str:
         """Extract city from boutique name 'L\'Arbre à Café City'"""
-        # Remove "L'Arbre à Café" prefix
+        # Remove "L'Arbre à Café" prefix (and a leading separator dash, if any)
         ville = name.replace("L'Arbre à Café", '').strip()
-        return ville
+        return ville.lstrip('-').strip()
 
     def get_boutique_by_ville(self, ville: str) -> Optional[Dict]:
         """Find boutique by city, department or postal code - 100% dynamic from KB"""

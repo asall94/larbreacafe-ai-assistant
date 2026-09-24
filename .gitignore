@@ -61,3 +61,5 @@ cv*
 *.docx
 *.pdf
 *.txt
+_gen_interview_doc.py
+FICHE_SYNTHESE.md

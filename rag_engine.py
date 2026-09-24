@@ -7,6 +7,7 @@ import os
 import json
 import pickle
 import hashlib
+import re
 from typing import List, Dict, Tuple
 import numpy as np
 import faiss
@@ -43,7 +44,16 @@ class RAGEngine:
     def _load_knowledge(self) -> Dict:
         """Load the knowledge base JSON."""
         with open(self.knowledge_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+
+        # Normalize field names: some scraper runs produce 'address'/'phone'
+        # instead of 'adresse'/'telephone' - keep both consumers working
+        for boutique in data.get('boutiques', []):
+            boutique.setdefault('adresse', boutique.get('address', ''))
+            boutique.setdefault('telephone', boutique.get('phone', ''))
+            boutique.setdefault('email', '')
+
+        return data
 
     def _prepare_documents(self) -> List[Dict]:
         """Prepare all documents for indexing."""
@@ -70,13 +80,11 @@ class RAGEngine:
         # 2. Documents from boutiques
         boutiques = self.data.get('boutiques', [])
         for boutique in boutiques:
-            # Extract the city from the name
+            # Extract the city/location label from the name (strip the brand prefix)
             name = boutique.get('name', '')
             ville = ''
             if name:
-                parts = name.split()
-                if len(parts) > 1:
-                    ville = ' '.join(parts[1:]).strip()
+                ville = re.sub(r"^L'Arbre à Café\s*-?\s*", '', name).strip()
 
             # Create a rich text for each boutique
             text_parts = [
